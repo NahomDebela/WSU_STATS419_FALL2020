@@ -102,6 +102,7 @@ mshafer_data_dropped <- as.numeric(mshafer_data_dropped[1,])
 median_data <- 	median(mshafer_data_dropped) 
 cat("Median",median_data, "\n")
 
+print("hello")
 
 mode_data <- doMode(data)
 mode_data<- as.numeric(mode_data)

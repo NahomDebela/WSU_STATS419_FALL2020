@@ -1,0 +1,24 @@
+---
+title: 'R Notebook sandbox: Assignment "Datasets" (10 points)'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    fig_caption: true
+    number_sections: true
+my-var: "nahom"
+---
+
+
+```{r, mychunk-local, message = FALSE}
+library(devtools)
+my.source = 'local';
+local.path = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/";
+source( paste0(local.path, "functions/libraries.R"), local = T);
+source( paste0(local.path, "functions/functions-imdb.R"), local = T);
+```
+# Personality Q1
+```{r, mychunk-Q1, message = TRUE}
+print("hi")
+```

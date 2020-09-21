@@ -1,0 +1,126 @@
+\documentclass{article}
+
+
+\topmargin=-0.45in      %
+\evensidemargin=0in     %
+\oddsidemargin=0in      %
+\textwidth=6.5in        %
+\textheight=9.0in       %
+\headsep=0.25in         %
+
+
+\usepackage{graphicx,float,wrapfig}
+\usepackage{moreverb} % monospace
+\usepackage{fancyhdr} % fancy header 
+\usepackage{lastpage} % last page 
+\usepackage{setspace} % line spacing
+\usepackage{amsmath,amsfonts,amsthm,amssymb}  % math fonts 
+\usepackage{tabularx} % advanced tables
+
+%%% default RStudio packages %%%
+\usepackage[unicode=true]{hyperref}
+
+
+
+
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{listings}
+% xcolor ... #rrggbb ... 
+
+
+
+
+
+$if(listings)$
+\usepackage{listings}
+$endif$
+$if(lhs)$
+\lstnewenvironment{code}{\lstset{language=r,basicstyle=\small\ttfamily}}{}
+$endif$
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
+$endif$
+$if(tables)$
+\usepackage{longtable}
+$endif$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% https://github.com/svmiller/svm-r-markdown-templates/blob/master/svm-latex-memo.tex
+
+
+%\usepackage[sort]{natbib}  %% will alpha/numeric in order inline
+%	\setcitestyle{aysep={}} %% no year, comma just year
+\usepackage[numbers]{natbib}
+	
+	
+\newcommand{\hmwkCourse}{ \textbf{$course$} }
+\newcommand{\hmwkCourseShort}{$course-short$}
+\newcommand{\hmwkTitle}{$title$}
+\newcommand{\hmwkAuthor}{$author$}
+\newcommand{\hmwkEmail}{$email$}
+\newcommand{\hmwkWSU}{[$wsu-id$]}
+\newcommand{\hmwkInstructor}{Instructor: $instructor$}
+\newcommand{\hmwkDate}{$date$}
+
+
+\pagestyle{fancy}   
+\lhead{\hmwkCourseShort}
+\chead{\hmwkTitle}
+\rhead{\hmwkAuthor}
+\lfoot{}
+\cfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}}
+\rfoot{}
+
+
+
+\title{\hmwkCourse \\ \hmwkTitle}
+\author{\hmwkAuthor \\ (\hmwkEmail) \\ \hmwkWSU \\[0.5in] \hmwkInstructor }
+\date{\hmwkDate}
+
+
+\usepackage{titling}
+\pretitle{\begin{flushright}\LARGE}
+\posttitle{\par\end{flushright}\vskip 0.5em}
+\preauthor{\begin{flushright}\large \lineskip 0.5em}
+\postauthor{\par\end{flushright}}
+\predate{\begin{flushright}\large}
+\postdate{\par\end{flushright}}
+
+
+%\tracingall
+
+
+
+
+\hypersetup{breaklinks=true,%
+            bookmarks=true,%
+            pdfauthor={$author$},%
+            pdftitle={$title$},%
+            colorlinks=true,%
+            citecolor=$if(citecolor)$$citecolor$$else$blue$endif$,%
+            urlcolor=$if(urlcolor)$$urlcolor$$else$blue$endif$,%
+            linkcolor=$if(linkcolor)$$linkcolor$$else$magenta$endif$,%
+            pdfborder={0 0 0}%
+            }%
+            
+
+
+\begin{document}
+
+\maketitle
+
+
+
+$body$
+
+
+
+
+\newpage
+\bibliographystyle{./../biblio/chicago}
+\bibliography{./../biblio/master} % this is master.bib located in the biblio subfolder ... you could have multiple files here if need be ... one is easier ...
+
+
+\end{document}
