@@ -1,46 +1,131 @@
 ---
-title: "03 datasets assignment revisited"
+title: "03_Datasets_Writeup"
 author: "Nahom Debela"
-email: "nahom.debela@wsu.edu"
-course: "STATS 419 Survey of Multivariate Analysis"
-instructor: "Monte J. Shaffer"
-date: "9/11/2020"
-output: 
-  html_document:
-    df_print: paged
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
   pdf_document:
     citation_package: natbib
-    latex-engine: pdflatex
-    template: /latex-templates/homework.tex
+    latex_engine: pdflatex
+    template: ./../latex-templates/homework.tex
+  html_document:
+    df_print: paged
+course: "STATS 419 Survey of Multivariate Analysis"
+course-short: STATS419
+instructor: Monte J. Shaffer
+email: nahom.debela@wsu.edu
+wsu-id: NA
 fig_caption: true
 number_sections: true
 ---
 
-```{r}
-library(devtools) # devtools is required for function source_url()
-my.source = 'github';
-github.path = "https://raw.githubusercontent.com/NahomDebela/WSU_STATS419_FALL2020/"
-#source_url("") #31:47 in video
+```{r, setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+```
 
+
+```{r, mychunk-1, message = FALSE}
+
+library(devtools)
+my.source = 'local';
+local.path = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/";
+local.data.path = ""
+source( paste0(local.path, "functions/libraries.R"), local = T);
+```
+
+# Matrix
+```{r, mychunk-Matrix-include, message = FALSE}
+source( paste0(local.path,"WEEK-03/functions/functions-personality.R"), local=T );
+
+myMatrix = matrix ( c (
+											1, 0, 2,
+											0, 3, 0,
+											4, 0, 5
+											), nrow=3, byrow=T);
+#Transpose matrix
+transposeMatrix(myMatrix)
+#Rotate by 90 degrees
+rotate90(myMatrix)
+#Rotate by 180 degrees
+rotate180(myMatrix)
+#Rotate by 270 degrees
+rotate270(myMatrix)
+
+```
+# IRIS
+```{r, mychunk-Iris-Include, message = TRUE}
+pairs(iris[1:4], pch = 21, bg = c("red", "green3", "blue") [unclass(iris$Species)])
+
+#DESCRIPTION
+
+#The Iris dataset contains data about the iris flower and was created by Ronald Fisher. The
+#multivariate data set consists of 3 different species and has dimensions of 5 columns and 150
+#rows.
+```
+
+# Personality
+```{r, mychunk-Personality-include, message = TRUE}
+source( paste0(local.path,"WEEK-03/functions/functions-personality.R"), local=T );
+
+
+myFile = paste0(local.path,"datasets/personality/personality-raw.txt");
+
+my_data <- read.table(myFile, header = TRUE, sep = "|");
+# Deleted column V00
+my_data$V00 <- NULL
+
+#Strips time apart so we can parse it
+date = strptime(my_data$date_test, format = '%m/%d/%Y %H:%M');
+
+new_df = cbind(my_data, date);
+
+#Parse the date 
+
+yr <- year(date);
+new_df$year <- yr
+
+wk <- week(date);
+new_df$week <- wk
+
+new_df$date_test <- NULL
+
+
+#sort dataframe by date and week, descending
+new_df <- new_df[
+ order(-new_df$year,-new_df$week),]
+ 
+# Delete duplicate rows by md5_email column
+new_df <- unique(new_df, by = "md5_email")
+
+#write a pipeline delimited dataframe to text
+#write.table(new_df, file = "personality-clean.txt", sep = "|")
+
+# newFile = paste0(local.path,"datasets/personality/personality-clean.txt");
+# write.table( myData.cleansed , file=newFile, quote=FALSE, col.names=TRUE, row.names=FALSE, sep="|");
+
+dim(my_data)
+dim(new_df)
+
+
+mshafer_data <- new_df[1,]
+
+doSummary(mshafer_data)
+#doVariance(mshafer_data)
+doMode(mshafer_data)
 
 ```
 
-## R Markdown
+# Variance and Z-Scores
+```{r, mychunk-Variance_zscores-Include, message = TRUE}
+source( paste0(local.path,"WEEK-03/functions/functions-personality.R"), local=T );
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+zscore_plot(mshafer_data)
+#The pattern is obvious in the picture. There is a positive correlation between z score and the raw
+#data and this is because z score is directly related to how many standard deviations it is from
+#the mean. This is shown in the graph: the higher the z score the farther from the mean and the
+#same is true for a low z score. Additionally the mean is directly at where the z score is 0 which
+#should happen.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

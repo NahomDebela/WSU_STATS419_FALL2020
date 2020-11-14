@@ -128,40 +128,46 @@ mshafer_data <- new_df[1,]
 mshafer_data
 
 doSummary(mshafer_data)
-
+doVariance(mshafer_data,"naive")
 #------------------------------------------------------------
 
 #sampleVariance 
-doVariance <- function(data, method)
-{
-  if (method == "naive")
+doVariance <- function(data, method="two-pass")
+  {
+    data = stats::na.omit(data);
+    if (method == "naive")
     {
       n = sum = sumsq = 0
       for (i in 1:length(data))
       {
         n <- n + 1
         sum <- sum + data[i]
-        sumsq <- sumsq + i * i
+        sumsq <- sumsq + data[i] * data[i]
       }
-      variance <- (sumsq − (sum * sum) / n) / (n − 1)
-    }
+     mean = (sum / n)
+     svariance = (sumsq − (sum * sum) / n) / (n − 1)
+     }
     else  
     {
-           # two - pass algorithim
-          n = sum1 = sum2 = 0
-
-          for (i in 1:length(data))
-            {
-              a <- a + 1
-              sum1 <- sum1 + data[i]
-            }
-          mean = sum1 / n
-          for (i in 1:length(data))
-          `{
-            sum2 = sum2 + ( (i - mean) * (i - mean) )
-         ` }
-          variance <- sum2 / (n - 1)
+      # two - pass algorithim
+      n = sum1 = sum2 = 0
+      
+      for (i in 1:length(data))
+      {
+        n <- n + 1
+        sum1 <- sum1 + data[i]
+      }
+      mean = sum1 / n
+      for (i in 1:length(data))
+      {
+        deviation = data[i] - mean;
+        sum2 = sum2 + deviation * deviation;
+      }
+      svariance = sum2 / (n - 1)
     }
+    sstandarddev = sqrt(svariance);
+    list("x.bar"=mean,"s.var"=svariance,"s.sd"=sstandarddev);
+  }
     
 #doMode
 

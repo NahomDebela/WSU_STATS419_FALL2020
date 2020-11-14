@@ -1,0 +1,48 @@
+---
+title: "03_Datasets_Writeup"
+author: "Nahom Debela"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ./../latex-templates/homework.tex
+  html_document:
+    df_print: paged
+course: "STATS 419 Survey of Multivariate Analysis"
+course-short: STATS419
+instructor: Monte J. Shaffer
+email: nahom.debela@wsu.edu
+wsu-id: NA
+fig_caption: true
+number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+```
+
+
+```{r, mychunk-1, message=FALSE}
+
+library(devtools) # devtools is required for function source_url()
+my.source = 'github';
+#abcd /citep{lol}
+github.path = "https://raw.githubusercontent.com/NahomDebela/WSU_STATS419_FALL2020/"
+source_url( paste0(github.path,"master/functions/libraries.R") )
+source_url( paste0(github.path,"master/WEEK-03/functions/functions-personality.R") )
+
+```
+
+\newpage
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,488 @@
+---
+title: "Notebook PREP for Project 01"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+    toc_depth: 4
+    fig_caption: yes
+    number_sections: yes
+my-var: monte
+---
+
+
+```{r, setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+
+library(devtools)
+my.source = 'local';
+local.path = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/";
+path.project = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/project-measure/"
+local.data.path.to.secret = "C:/Users/nahom/Desktop/STATS 419/datasets/measure/";
+local.data.path.to.secret.NBA = "C:/Users/nahom/Desktop/STATS 419/datasets/measure-NBA/";
+source( paste0(local.path, "functions/libraries.R"), local = T);
+
+library(humanVerseWSU);
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+source_url("https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/humanVerseWSU/R/functions-dataframe.R");
+source_url( paste0(path.github,"humanVerseWSU/R/functions-EDA.R") );  # EDA functions ...
+source_url( paste0(path.github,"misc/functions-project-measure.R") );  # correlation function ...
+
+source( paste0(local.path, "functions/functions-project-measure.R"), local = T);
+```
+
+# Data Cleaning
+```{r, mychunk-Data-Reading, message = FALSE}
+myFile = paste0(local.data.path.to.secret,"measure-students.txt");
+measure.raw <- read.csv(myFile, header = TRUE, sep = "|");
+#dim(measure.raw)
+
+nbaData = readDataNBA("Player - Bio Stats (1947-2017).csv")
+#cleanNbaData(nbaData)
+#names(nbaData)
+names(nbaData)[names(nbaData) == "V3"] <- "Year Start"
+
+names(nbaData)[names(nbaData) == "V8"] <- "Height (in cm)"
+names(nbaData)[names(nbaData) == "V9"] <- "Wingspan (in cm)"
+nbaData = nbaData[,c("Height (in cm)","Wingspan (in cm)","Year Start")]
+#dim(data)
+nbaData = nbaData[-c(1),]
+nbaData = na.omit(nbaData)
+nbaData[,1] <- as.numeric(nbaData[,1])
+nbaData[,2] <- as.numeric(nbaData[,2])
+nbaData[,3] <- as.numeric(nbaData[,3])
+#length(nbaData$`Year Start`[which(nbaData$`Year Start` > 2015)])
+#length(nbaData$`Year Start`[which(nbaData$`Year Start` <= 2002)])
+nbaData.2015 <- subset(nbaData, `Year Start` > 2015, select=c("Height (in cm)", "Wingspan (in cm)"))
+nbaData.2002 <- subset(nbaData, `Year Start` <= 2002, select=c("Height (in cm)", "Wingspan (in cm)"))
+
+names(nbaData.2015)[names(nbaData.2015) == "Height (in cm)"] <- "Height (in cm) 2015"
+names(nbaData.2015)[names(nbaData.2015) == "Wingspan (in cm)"] <- "Wingspan (in cm) 2015"
+names(nbaData.2002)[names(nbaData.2002) == "Height (in cm)"] <- "Height (in cm) 2002"
+names(nbaData.2002)[names(nbaData.2002) == "Wingspan (in cm)"] <- "Wingspan (in cm) 2002"
+#names(nbaData)[names(nbaData) == "V9"] <- "Wingspan (in cm)"
+
+set.seed(1)
+#nbaData = nbaData[sample(1:nrow(nbaData), 49),]
+nbaData.2015 = nbaData.2015[sample(1:nrow(nbaData.2015), 49),]
+nbaData.2002 = nbaData.2002[sample(1:nrow(nbaData.2002), 49),]
+
+#nbaData.2015 = nbaData.2015[,-c(3)]
+#nbaData.2002 = nbaData.2002[,-c(3)]
+
+ratio.column.2002 = as.data.frame(nbaData.2002$`Wingspan (in cm)`/ nbaData.2002$`Height (in cm)`)
+
+ratio.column.2015 = as.data.frame(nbaData.2015$`Wingspan (in cm)`/ nbaData.2015$`Height (in cm)`)
+
+nbaData.2002['NBA Ape Scale 2002'] = ratio.column.2002 
+nbaData.2015['NBA Ape Scale 2015'] = ratio.column.2015
+merged.df = merge.data.frame(nbaData.2002,nbaData.2015)
+
+merged.df = cbind(nbaData.2002,nbaData.2015)
+
+
+```
+
+```{r, mychunk-Remove-NA, message = FALSE}
+# 176 Records
+dim(na.omit(measure.raw))
+# I want to keep values where only notes is NA because it wont be a mandatory column for my data analysis.
+# So I will change the NA values of Notes column to string(None)
+
+# Same for Minutes. 
+measure.raw$notes[which(is.na(measure.raw$notes))] <- "None"
+# I will eventually turn 0 values into the median of minutes column
+measure.raw$minutes[which(is.na(measure.raw$minutes))] <- 0
+measure.na.omit = na.omit(measure.raw)
+# 239 Records
+# I found by altering the Null value to the string None I can keep 72 rows
+dim(measure.na.omit)
+```
+```{r, mychunk-remove-duplicates, message = FALSE}
+
+measure.na.omit = removeDuplicatesFromDataFrameAllColumns(measure.na.omit);
+dim(measure.na.omit)
+```
+
+```{r, mychunk-convert-units, message = FALSE}
+# copy into new dataframe
+measure.to.cm <- data.frame(measure.na.omit)
+# Every non cm values are units of inches
+unique(measure.to.cm$units)
+
+measure.to.cm[104,]
+# loop through each measurement column
+for (i in 4:26)
+{
+  # loop inside each value inside column
+  # for all non cm values, convert to cm.
+  for (j in 1:length(measure.to.cm[,i]))
+  {
+  # for all non cm rows convert to cm...
+    if (measure.to.cm$units[j] != "cm")
+      {
+        measure.to.cm[j,i] = measure.to.cm[j,i] * 2.54
+      }
+  }
+}
+# Now that all the values are in units: cm I can convert the unit column values to all be cm
+measure.to.cm$units = "cm"
+dim(measure.to.cm)
+```
+
+```{r, mychunk-Cleaning-Gender, message = FALSE}
+
+# copy into new dataframe
+measure.data.v1 <- data.frame(measure.to.cm)
+
+sumOfUniqueValuesInColumn(measure.data.v1, "gender")
+
+# Convert gender values to either 1 of 3 genders given in data
+# male, female, or non-binary
+measure.data.v1$gender = factor(tolower(measure.data.v1$gender))
+measure.data.v1$gender[measure.data.v1$gender == 'Female'] <- "female"
+measure.data.v1$gender[measure.data.v1$gender == 'M'] <- "male"
+measure.data.v1$gender[measure.data.v1$gender == 'Male'] <- "male"
+measure.data.v1$gender[measure.data.v1$gender == 'f'] <- "female"
+measure.data.v1$gender[measure.data.v1$gender == 'm'] <- "male"
+
+sumOfUniqueValuesInColumn(measure.data.v1, "gender")
+
+
+```
+
+
+```{r, mychunk-Cleaning-Ethnicity, message = FALSE}
+
+sumOfUniqueValuesInColumn(measure.data.v1, "ethnicity")
+
+measure.data.v1$ethnicity = factor(tolower(measure.data.v1$ethnicity))
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'chinese'] <- "asian"
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'laotian'] <- "asian"
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'white'] <- "caucasian"
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'white non-hispanic'] <- "caucasian"  
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'indian'] <- "asian"
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'latin american'] <- "hispanic"
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'asain'] <- "asian"
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'korean'] <- "asian"
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'caucasain'] <- "caucasian"
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'anglo'] <- "caucasian"
+measure.data.v1$ethnicity[measure.data.v1$ethnicity == 'white-filipino'] <- "caucasian/asian"
+
+sumOfUniqueValuesInColumn(measure.data.v1, "ethnicity")
+
+```
+
+```{r, mychunk-cleaning-eyes, message = FALSE}
+sumOfUniqueValuesInColumn(measure.data.v1, "eye_color")
+measure.data.v1$eye_color = factor(tolower(measure.data.v1$eye_color))
+measure.data.v1$eye = factor(tolower(measure.data.v1$eye))
+
+index = getIndexOfDataFrameRows(measure.data.v1, "eye_color", 'left')
+measure.data.v1[index,]
+# looks like values in these columns are mixed up.. needs to be switched.
+measure.data.v1$eye[measure.data.v1$eye == 'brown'] <- "left"
+measure.data.v1$eye_color[measure.data.v1$eye_color == 'left'] <- "brown"
+
+measure.data.v1$eye_color[measure.data.v1$eye_color == 'blue/green'] <- "blue-green"
+measure.data.v1$eye_color[measure.data.v1$eye_color == 'black'] <- "brown"
+measure.data.v1$eye_color[measure.data.v1$eye_color == 'black'] <- "brown"
+
+```
+
+```{r, mychunk-clean-minutes, message = FALSE}
+names(measure.data.v1)
+sumOfUniqueValuesInColumn(measure.data.v1, "minutes")
+# There is unrealistic data in 10 rows for the column minutes..
+vals = as.numeric(measure.data.v1$minutes[which(measure.data.v1$minutes < 0)])
+mean.minutes = mean(measure.data.v1$minutes[measure.data.v1$minutes > 0])
+boxplot(measure.data.v1$minutes[measure.data.v1$minutes > 0])
+median.minutes = median(measure.data.v1$minutes[measure.data.v1$minutes > 0])
+
+# I decided to use median as a replacement for the bad data (negatives and NAs's) because there were still significant outliers as seen in the box plot
+
+for (i in vals)
+{
+  index = getIndexOfDataFrameRows(measure.data.v1, "minutes", i)
+  measure.data.v1$minutes[index] <- median.minutes
+}
+measure.data.v1$minutes[measure.data.v1$minutes == 0] <- median.minutes
+measure.data.v1[179,]
+
+dim(measure.data.v1)
+```
+
+
+```{r, mychunk-cleaning-swinging, message = FALSE}
+names(measure.data.v1)
+sumOfUniqueValuesInColumn(measure.data.v1, "swinging")
+measure.data.v1$swinging = factor(tolower(measure.data.v1$swinging))
+
+measure.data.v1$swinging[measure.data.v1$swinging == 'rigth'] <- "right"
+measure.data.v1$swinging[measure.data.v1$swinging == 'let'] <- "left"
+measure.data.v1$swinging[measure.data.v1$swinging == 'leftt'] <- "left"
+```
+
+
+```{r, mychunk-additional-cleaning, message = FALSE}
+
+measure.data.v1$writing = factor(tolower(measure.data.v1$writing))
+# Remove row with the value "N/A" column side
+index = getIndexOfDataFrameRows(measure.data.v1, "side", "N/A")
+measure.data.v1[-c(index), ]
+
+```
+
+```{r, mychunk-removing-outliers, message = FALSE}
+# copy into new dataframe
+measure.outliers <- data.frame(measure.data.v1)
+names(measure.outliers)
+
+outliers = getOutliers(measure.outliers,"height.NA")
+measure.outliers = removeOutliers(measure.outliers,"height.NA",outliers)
+
+getOutliers(measure.outliers,"head.height.NA")
+# The outliers for head height dont seem unrealistic. For example I believe it is possible that
+# a person could have a head height of 30cm.
+
+outliers = getOutliers(measure.outliers,"head.circumference.NA")
+measure.outliers = removeOutliers(measure.outliers,"head.circumference.NA",outliers)
+# 8 outliers, removed 8 rows.
+
+outliers = getOutliers(measure.outliers,"hand.length.left")
+measure.outliers = removeOutliers(measure.outliers,"hand.length.left",outliers)
+# 3 outliers, removed 3 rows.
+
+getOutliers(measure.outliers,"hand.length.right")
+# No outliers
+
+outliers = getOutliers(measure.outliers,"hand.width.left")
+measure.outliers = removeOutliers(measure.outliers,"hand.width.left",outliers)
+
+outliers = getOutliers(measure.outliers,"hand.width.right")
+measure.outliers = removeOutliers(measure.outliers,"hand.width.right",outliers)
+
+outliers = getOutliers(measure.outliers,"hand.elbow.left")
+measure.outliers = removeOutliers(measure.outliers,"hand.elbow.left",outliers)
+
+outliers = getOutliers(measure.outliers,"hand.elbow.right")
+measure.outliers = removeOutliers(measure.outliers,"hand.elbow.right",outliers)
+
+outliers = getOutliers(measure.outliers,"elbow.armpit.left")
+measure.outliers = removeOutliers(measure.outliers,"elbow.armpit.left",outliers)
+
+getOutliers(measure.outliers,"elbow.armpit.right")
+
+getOutliers(measure.outliers,"arm.reach.left")
+outliers = c(53.00,  56.00,  56.00,  64.00,  65.00,  65.10,  66.04,  66.10,  67.00)
+measure.outliers = removeOutliers(measure.outliers,"arm.reach.left",outliers)
+
+getOutliers(measure.outliers,"arm.reach.right")
+# No unreasonable outliers
+
+outliers = getOutliers(measure.outliers,"arm.span.NA")
+measure.outliers = removeOutliers(measure.outliers,"arm.span.NA",outliers)
+
+outliers = getOutliers(measure.outliers,"foot.length.left")
+measure.outliers = removeOutliers(measure.outliers,"foot.length.left",outliers)
+
+outliers = getOutliers(measure.outliers,"foot.length.right")
+measure.outliers = removeOutliers(measure.outliers,"foot.length.right",outliers)
+
+getOutliers(measure.outliers,"floor.kneepit.left")
+
+getOutliers(measure.outliers,"floor.kneepit.right")
+
+getOutliers(measure.outliers,"floor.hip.left")
+
+getOutliers(measure.outliers,"floor.hip.right")
+
+getOutliers(measure.outliers,"floor.navel.NA")
+
+outliers = getOutliers(measure.outliers,"floor.armpit.left")
+measure.outliers = removeOutliers(measure.outliers,"floor.armpit.left",outliers)
+
+outliers = getOutliers(measure.outliers,"floor.armpit.left")
+measure.outliers = removeOutliers(measure.outliers,"floor.armpit.left",outliers)
+
+dim(measure.outliers)
+
+```
+
+#EDA
+```{r, mychunk-reshapingData, message = FALSE}
+cleaned.measure.data <- data.frame(measure.outliers)
+
+reshapeDataMeasure = function(data){
+  # Select males that are at least 18 years of age
+  data <- data[ which(data$gender == 'male' & data$age >= 18), ]
+  ratio.column.measure = as.data.frame(data$arm.span.NA/ data$height.NA)
+  data['Measure Ape Scale'] = ratio.column.measure 
+  data = data[,c("height.NA","arm.span.NA",'Measure Ape Scale')]
+  return (data)
+}
+
+mergeMyData = function(clean.df.measure,clean.nba.2002,clean.nba.2015)
+{
+  df.measure = reshapeDataMeasure(clean.df.measure)
+  merged.df = cbind(Measure.Ape.Scale = df.measure[,3],NBA.Ape.Scale.2002 = clean.nba.2002[,3])
+  final.merged.df = cbind(merged.df, NBA.Ape.Scale.2015 = clean.nba.2015[,3])
+  as.matrix(final.merged.df)
+  return(final.merged.df)
+}
+
+```
+
+Below is the code to generate the summary statistics and save them as a table that you see in Section \ref{}.
+```{r, appendix-summary, message = FALSE}
+# Set table directory
+table_file = paste0(getwd(),"/","tables","/","table-correlation.tex")
+
+matrix = as.matrix(mergeMyDataAll(cleaned.measure.data,nbaData.cleaned.2002,nbaData.cleaned.2015))
+
+buildLatexCorrelationTable(matrix, rotateTable = TRUE,             width.table = 1, myFile=table_file,                                   myLabel ="table:correlation-NBA",                                      myNames =c("height.NA","arm.span.NA","Measure Ape Scale","Height (in cm) 2002","Wingspan (in cm) 2002","NBA Ape Scale 2002","Height (in cm) 2015", "Wingspan (in cm) 2015", "NBA Ape Scale 2015"),                     myCaption ="NBA Descriptive Statistics and Correlation Analysis")
+
+Sys.sleep(2);
+```
+
+```{r, mychunk-get-summary, message = FALSE}
+nbaData.2002
+nbaData.2015
+
+###################
+fit <- lm(arm.span.NA~height.NA, data=measure.cleaned.df)
+fit2 <- lm(nbaData.2015[,2]~nbaData.2015[,1], data=nbaData.2015)
+fit3 <- lm(nbaData.2002[,2]~nbaData.2002[,1], data=nbaData.2002)
+
+plot(nbaData.2015[,1],nbaData.2015[,2], xlab = "Height", ylab="Wingspan")
+points(measure.cleaned.df[,1],measure.cleaned.df[,2], col="blue")
+points(nbaData.2002[,1],nbaData.2002[,2], col="green")
+abline(fit, col = "blue")
+abline(fit2, col = "black")
+abline(fit3, col = "green")
+legend("topleft", legend=c("NBA player in 2015","Normal Person","NBA player in 2002"),
+       col=c("black", "blue","green"), lty=1, cex=0.8)
+#############################
+
+
+##############################
+re.cleaned.df = reshapeDataMeasure(cleaned.measure.data)
+
+
+
+
+
+plot(measure.cleaned.df[,1],measure.cleaned.df[,2])
+
+
+plot(nbaData.cleaned.2015[,3],nbaData.cleaned.2002[,3])
+
+
+# Ape Index
+summary(measure.cleaned.df[,3])
+summary(nbaData.2002[,3])
+summary(nbaData.2015[,3])
+
+# Ape Index
+mean(measure.cleaned.df[,3])
+mean(nbaData.2002[,3])
+mean(nbaData.2015[,3])
+
+# Wingspan
+mean(measure.cleaned.df[,2])
+mean(nbaData.2002[,2])
+mean(nbaData.2015[,2])
+
+# Height
+mean(measure.cleaned.df[,1])
+mean(nbaData.2002[,1])
+mean(nbaData.2015[,1])
+
+nbaData.2002
+nbaData.2015
+summary(measure.cleaned.df)
+summary(nbaData.2002)
+summary(nbaData.2015)
+# Get summary of columns in function
+getSummary= function(df,columns) 
+{
+  summary(df)
+}
+
+```
+
+
+# Project 1: Measure
+
+#### SECRET practice
+
+We will build a work product where the data stays in a SECRET or private format.  It should not be uploaded to GitHub.
+
+#### Data cleansing
+
+I have provided the data in a compiled format.  In the notebook `unit_02_confirmatory_data_analysis\nascent\2020-10-23_descriptive-statistics.Rmd`, I have provided some clues on how to cleanse the data.  That task is yours.
+
+I consider changing all of the results to one unit system part of data cleansing.  You can choose "inches" (in) or "centimeters" (cm) for your analysis depending on your culture and comfort with a given system.  This means, all of the data needs to be converted.  Please recall the `distance` work we have done, there is a library `measurements` and a function `conv_unit`.
+
+#### Data collapsing
+
+Some people have data for a person's "left" and "right" side of the body.  I have prepared code for you to collapse that data so (we assume) each side of the body is equal.  This is one option.  You can choose to keep the overall data and address NA's (missing values) if your research question is tied to body symmetry.
+
+In the notebook on correlation in week 6, the section `1.2.3.3 Measure` has some code on to "getOne" measurement from the left or right.  If one is NA, it returns the other.  If they both are available, it returns the mean.
+
+
+#### Data creation
+
+There may be a few data features you may want to create.  I have the "arm span" and information about the "armpits" which would enable you to compute the internal "chest width" (from armpit to armpit).  There may be other data you can create in a similar fashion.
+
+#### Data proportions
+
+It is very likely that for each measure row, you would want to create "scaled variables to that person's height", also known as a proportion.
+
+Alternatively, you could scale everything to a person's head height.
+
+Alternatively, you could review lots of different proportions.  I suggested at one point that the foot-size and the "upper arm" (elbow-pit to arm-pit) are the same size (some basic Pythagorean theorem could get you there or close).
+
+There are lots of possibilities, all depends on your interests.  
+
+- Some say the unit of length of a "one foot" that we now decompose into 12 inches was a function of the actual length of the King's foot in England, and would change when a new King was crowned.  
+
+- Another measure of length, the "cubit" is derived from the Latin word for "elbow"
+
+- Galileo Galilei, the famous Italian polymath, literally sold his body parts when he died (quite the entrepreneur).  He had extremely long fingers.  In the museum in Firenze, they have on display a few of the fingers recovered.  Yes, I have seen them <https://www.museogalileo.it/it/>.  Most people miss this museum because they are too busy admiring David's proportions at the nearby Academia Gallery <https://en.wikipedia.org/wiki/David_(Michelangelo)>.
+
+
+#### Data selection
+
+Which columns are you going to use in your analysis.  The "covariates" will be necessary to describe the sample procedure, but for your research question maybe you just use a few of those, or none of those.
+
+The summary statistics on the sample "covariates" and on the overall data are dependent on which columns you want to research.  This depends, or is constrained by your research question.  For example, in the "Joireman paper" we did collect a lot of other data, and even showed them a variant of an exercise motivator (Nike Ad):
+
+<http://www.mshaffer.com/arizona/videos/exercise/010.mp3>
+
+<http://www.mshaffer.com/arizona/videos/exercise/101.mp4>
+
+<http://www.mshaffer.com/arizona/videos/exercise/110.mp4>
+
+<http://www.mshaffer.com/arizona/videos/exercise/111.mp4>
+
+
+## Project Research Question
+
+Have you formulated one primary research question and possibly 2-3 subquestions.  Or maybe 2-3 primary questions?
+
+The project was initially intended to be an exploration of the original data (distances), the computed proportions (as a function of head height), and its relationship to correlations.  However, you now have some experience with basic clustering techniques, so you could try to use them as well.  I would say **focus** on the key research question and don't deviate too far afield into clustering techniques that you don't report on "exploratory findings" that inform your research question.
+
+# Preparation for Final Writeup
+
+Use this space to include and run code that gets your data and research question prepared.
+
+Alternatively, you can use another notebook.  You will submit a final "ZIP" file that contains the supporting documents and the final "PDF" product.  I will build the template for the "PDF" product and help with the tasks new to you in that regard.
+
+The data cleanup, the research question, and the analysis is up to you.
+
+I will be supporting the process of turning the results and data you prepare into a "work product".

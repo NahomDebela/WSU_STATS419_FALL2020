@@ -1,0 +1,119 @@
+---
+title: 'Measure As Txt file'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true
+my-var: "nahom" 
+---
+
+```{r, chunk-get-keys}
+
+path.measure = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/Project 1/";  
+  # change this to wherever measure.xls lives for you...  
+  # YOU SHOULD USE MINE IN THE DROPBOX AS THE EXAMPLE...
+file.measure = paste0(path.measure,"measure.xlsx");
+  # BELOW, we will import yours ...
+
+library(readxl);
+
+covariates = read_excel(file.measure, sheet="covariates");
+panel = read_excel(file.measure, sheet="panel");
+
+# these are currently in "tibble form"
+
+covariates = as.data.frame(covariates);
+panel = as.data.frame(panel);
+
+library(humanVerseWSU);
+
+panel.first = panel$`person_id`[1];  # 1c2408654ef5a2fe1fc962088312266c
+
+temp = panel[panel$`person_id` == panel.first , ];
+
+mySide = (panel$side);
+myKeys = (panel$mkey);
+
+myJointKeys =  unique( paste0(myKeys,"-",mySide) );
+
+## we know these are an exhaustive list of keys ...
+  # covariates have 13 variables ...
+  # side + jointkeys (23) + values 
+tabularized.df = data.frame( matrix(NA, nrow=0, ncol=37) );
+  tabularized.cols = c( colnames(covariates)[1:2], "side", myJointKeys, colnames(covariates)[3:13]);
+
+colnames(tabularized.df) = tabularized.cols;
+
+```
+Using the sample file provided, we have all the known keys.  Now, we will use those keys and "flatten" the covariates and panel into one dataframe that has lots of columns (37).
+
+```{r, chunk-get-your-data}
+
+  # HERE, we will import yours ...
+
+path.your.measure = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/Project 1/";   # trailing slash or not?
+
+file.your.measure = paste0(path.your.measure,"measure.xlsx"); # if no trailing slash, notice the "/"
+
+
+
+covariates = read_excel(file.your.measure, sheet="covariates");
+panel = read_excel(file.your.measure, sheet="panel");
+
+# these are currently in "tibble form"
+
+covariates = as.data.frame(covariates);
+panel = as.data.frame(panel);
+
+
+n.cov = dim(covariates)[1];
+for(i in 1:n.cov)
+  {
+  covariates.row = covariates[i,];
+  
+  final.row = as.data.frame( t(rep("NA",37)) ); 
+  colnames(final.row) = tabularized.cols;
+  
+  final.row$`data_collector` = collector = covariates.row$`data_collector`;
+  final.row$`person_id` = person = covariates.row$`person_id`;
+  final.row[27:37] = covariates.row[3:13];  
+  
+  subpanel = panel[panel$`data_collector` == collector & panel$`person_id`== person, ];
+  n.sub = dim(subpanel)[1];
+  for(j in 1:n.sub)
+    {
+    subpanel.row = subpanel[j,];
+      s = subpanel.row$side;
+      k = subpanel.row$mkey;
+      jk = paste0(k,"-",s);
+      v = subpanel.row$mvalue;
+    final.row$side = s;
+    final.row[jk] = v;
+  }
+  
+  tabularized.df = rbind(tabularized.df, final.row);
+  
+  }
+
+tabularized.df;
+str(tabularized.df);
+
+## verify your data ... make certain it seems to make sense
+## make certain notes or other fields don't have the "|" pipe character
+
+
+# save as a TXT file, pipe-delimited using your data_collector id
+
+collector = "3ad5beac9bab4ce274de36bb36aa7f30";
+outfile = paste0(path.measure,"/","measure","-",collector,".txt");
+
+utils::write.table( tabularized.df , file=outfile, quote=FALSE, col.names=TRUE, row.names=FALSE, sep="|");
+
+# SUBMIT THIS FILE as measure-txt homework...
+
+
+```

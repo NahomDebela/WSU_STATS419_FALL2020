@@ -1,0 +1,476 @@
+\documentclass[]{article}
+\usepackage[left=1in,top=1in,right=1in,bottom=1in]{geometry}
+
+
+%%%% more monte %%%%
+% thispagestyle{empty}
+% https://stackoverflow.com/questions/2166557/how-to-hide-the-page-number-in-latex-on-first-page-of-a-chapter
+\usepackage{color}
+% \usepackage[table]{xcolor} % are they using color?
+
+% \definecolor{WSU.crimson}{HTML}{981e32}
+% \definecolor{WSU.gray}{HTML}{5e6a71}
+
+% \definecolor{shadecolor}{RGB}{248,248,248}
+\definecolor{WSU.crimson}{RGB}{152,30,50} % use http://colors.mshaffer.com to convert from 981e32
+\definecolor{WSU.gray}{RGB}{94,106,113}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand*{\authorfont}{\fontfamily{phv}\selectfont}
+\usepackage{lmodern}
+
+
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+
+
+
+
+\usepackage{abstract}
+\renewcommand{\abstractname}{}    % clear the title
+\renewcommand{\absnamepos}{empty} % originally center
+
+\renewenvironment{abstract}
+ {{%
+    \setlength{\leftmargin}{0mm}
+    \setlength{\rightmargin}{\leftmargin}%
+  }%
+  \relax}
+ {\endlist}
+
+\makeatletter
+\def\@maketitle{%
+  \pagestyle{empty}
+  \newpage
+%  \null
+%  \vskip 2em%
+%  \begin{center}%
+  \let \footnote \thanks
+    {\fontsize{18}{20}\selectfont\raggedright  \setlength{\parindent}{0pt} \@title \par}%
+}
+%\fi
+\makeatother
+
+
+
+
+
+
+
+
+
+\title{\textbf{\textcolor{WSU.crimson}{Notebook PREP for Project 01}}  }
+ 
+
+%  
+
+% \author{ \Large  \hfill \normalsize \emph{} }
+\author{}
+
+
+\date{}
+\setcounter{secnumdepth}{}
+
+\usepackage{titlesec}
+% See the link above: KOMA classes are not compatible with titlesec any more. Sorry.
+% https://github.com/jbezos/titlesec/issues/11
+\titleformat*{\section}{\bfseries}
+\titleformat*{\subsection}{\bfseries\itshape}
+\titleformat*{\subsubsection}{\itshape}
+\titleformat*{\paragraph}{\itshape}
+\titleformat*{\subparagraph}{\itshape}
+
+% https://code.usgs.gov/usgs/norock/irvine_k/ip-092225/
+
+
+%\titleformat*{\section}{\normalsize\bfseries}
+%\titleformat*{\subsection}{\normalsize\itshape}
+%\titleformat*{\subsubsection}{\normalsize\itshape}
+%\titleformat*{\paragraph}{\normalsize\itshape}
+%\titleformat*{\subparagraph}{\normalsize\itshape}
+
+% https://tex.stackexchange.com/questions/233866/one-column-multicol-environment#233904
+\usepackage{environ}
+\NewEnviron{auxmulticols}[1]{%
+  \ifnum#1<2\relax% Fewer than 2 columns
+    %\vspace{-\baselineskip}% Possible vertical correction
+    \BODY
+  \else% More than 1 column
+    \begin{multicols}{#1}
+      \BODY
+    \end{multicols}%
+  \fi
+}
+
+
+
+
+
+\usepackage{natbib}
+\setcitestyle{aysep={}} %% no year, comma just year
+% \usepackage[numbers]{natbib}
+\bibliographystyle{plainnat}
+
+
+
+\usepackage[strings]{underscore} % protect underscores in most circumstances
+
+
+
+
+\newtheorem{hypothesis}{Hypothesis}
+\usepackage{setspace}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% MONTE ADDS %%%
+
+\usepackage{fancyhdr} % fancy header 
+\usepackage{lastpage} % last page 
+
+\usepackage{multicol}
+
+
+\usepackage{etoolbox}
+\AtBeginEnvironment{quote}{\singlespacing\small}
+% https://tex.stackexchange.com/questions/325695/how-to-style-blockquote
+
+
+\usepackage{soul}			%% allows strike-through
+\usepackage{url}			%% fixes underscores in urls
+\usepackage{csquotes}		%% allows \textquote in references
+\usepackage{rotating}		%% allows table and box rotation
+\usepackage{caption}		%% customize caption information
+\usepackage{booktabs}		%% enhance table/tabular environment
+\usepackage{tabularx}		%% width attributes updates tabular
+\usepackage{enumerate}		%% special item environment
+\usepackage{enumitem}		%% special item environment
+
+\usepackage{lineno}		%% allows linenumbers for editing using \linenumbers
+\usepackage{hanging}
+
+
+\usepackage{mathtools}  	%% also loads amsmath
+\usepackage{bm}		%% bold-math
+\usepackage{scalerel}	%% scale one element (make one beta bigger font)
+
+\newcommand{\gFrac}[2]{ \genfrac{}{}{0pt}{1}{{#1}}{#2} }
+
+\newcommand{\betaSH}[3]{  \gFrac{\text{\tiny #1}}{{\text{\tiny #2}}}\hat{\beta}_{\text{#3}}   }
+\newcommand{\betaSB}[3]{              ^{\text{#1}} _{\text{#2}} \bm{\beta} _{\text{#3}}                   }  %% bold
+\newcommand{\bigEQ}{  \scaleobj{1.5}{{\ }= } }
+\newcommand{\bigP}[1]{  \scaleobj{1.5}{#1 } }
+
+
+
+
+
+\usepackage{endnotes}  % he already does this ...
+\renewcommand{\enotesize}{\normalsize}
+% https://tex.stackexchange.com/questions/99984/endnotes-do-not-be-superscript-and-add-a-space
+\renewcommand\makeenmark{\textsuperscript{[\theenmark]}} % in brackets %
+% https://tex.stackexchange.com/questions/31574/how-to-control-the-indent-in-endnotes
+\patchcmd{\enoteformat}{1.8em}{0pt}{}{}
+
+\patchcmd{\theendnotes}
+  {\makeatletter}
+  {\makeatletter\renewcommand\makeenmark{\textbf{[\theenmark]} }}
+  {}{}
+
+
+
+% https://tex.stackexchange.com/questions/141906/configuring-footnote-position-and-spacing
+
+\addtolength{\footnotesep}{5mm} % change to 1mm
+
+\renewcommand{\thefootnote}{\textbf{\arabic{footnote}}}
+\let\footnote=\endnote
+%\renewcommand*{\theendnote}{\alph{endnote}}
+%\renewcommand{\theendnote}{\textbf{\arabic{endnote}}}
+
+
+\renewcommand*{\notesname}{}
+
+\makeatletter
+\def\enoteheading{\section*{\notesname
+  \@mkboth{\MakeUppercase{\notesname}}{\MakeUppercase{\notesname}}}%
+  \mbox{}\par\vskip-2.3\baselineskip\noindent\rule{.5\textwidth}{0.4pt}\par\vskip\baselineskip}
+\makeatother
+
+
+\renewcommand*{\contentsname}{}
+
+\renewcommand*{\refname}{}
+
+
+%\usepackage{subfigure}
+\usepackage{subcaption}
+
+\captionsetup{labelfont=bf}  % Make Table / Figure bold
+
+%%% you could add elements here ... monte says .... %%%
+%\usepackage{mypackageForCapitalH}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+% move the hyperref stuff down here, after header-includes, to allow for - \usepackage{hyperref}
+
+\makeatletter
+\@ifpackageloaded{hyperref}{}{%
+\ifxetex
+  \PassOptionsToPackage{hyphens}{url}\usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \PassOptionsToPackage{hyphens}{url}\usepackage[draft,unicode=true]{hyperref}
+\fi
+}
+
+\@ifpackageloaded{color}{
+    \PassOptionsToPackage{usenames,dvipsnames}{color}
+}{%
+    \usepackage[usenames,dvipsnames]{color}
+}
+\makeatother
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={},
+             pdfkeywords = {},  
+            pdftitle={Notebook PREP for Project 01},
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+
+% Add an option for endnotes. -----
+
+%
+% add tightlist ----------
+\providecommand{\tightlist}{%
+\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% add some other packages ----------
+
+% \usepackage{multicol}
+% This should regulate where figures float
+% See: https://tex.stackexchange.com/questions/2275/keeping-tables-figures-close-to-where-they-are-mentioned
+\usepackage[section]{placeins}
+
+
+
+\pagestyle{fancy}   
+\lhead{\textcolor{WSU.crimson}{\textbf{ Notebook PREP for Project 01 }}}
+\chead{}
+\rhead{\textcolor{WSU.gray}{\textbf{  Page\ \thepage\ of\ \protect\pageref{LastPage} }}}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+
+
+\begin{document}
+	
+% \pagenumbering{arabic}% resets `page` counter to 1 
+%    
+
+% \maketitle
+
+{% \usefont{T1}{pnc}{m}{n}
+\setlength{\parindent}{0pt}
+\thispagestyle{plain}
+{\fontsize{18}{20}\selectfont\raggedright 
+\maketitle  % title \par  
+
+}
+
+{
+   \vskip 13.5pt\relax \normalsize\fontsize{11}{12} 
+   
+ 
+
+}
+
+}
+
+
+
+
+
+
+\vskip -8.5pt
+
+
+
+ % removetitleabstract
+
+\noindent  
+
+\hypertarget{project-1-measure}{%
+\section{Project 1: Measure}\label{project-1-measure}}
+
+\hypertarget{secret-practice}{%
+\paragraph{SECRET practice}\label{secret-practice}}
+
+We will build a work product where the data stays in a SECRET or private
+format. It should not be uploaded to GitHub.
+
+\hypertarget{data-cleansing}{%
+\paragraph{Data cleansing}\label{data-cleansing}}
+
+I have provided the data in a compiled format. In the notebook
+\texttt{unit\_02\_confirmatory\_data\_analysis\textbackslash{}nascent\textbackslash{}2020-10-23\_descriptive-statistics.Rmd},
+I have provided some clues on how to cleanse the data. That task is
+yours.
+
+I consider changing all of the results to one unit system part of data
+cleansing. You can choose ``inches'' (in) or ``centimeters'' (cm) for
+your analysis depending on your culture and comfort with a given system.
+This means, all of the data needs to be converted. Please recall the
+\texttt{distance} work we have done, there is a library
+\texttt{measurements} and a function \texttt{conv\_unit}.
+
+\hypertarget{data-collapsing}{%
+\paragraph{Data collapsing}\label{data-collapsing}}
+
+Some people have data for a person's ``left'' and ``right'' side of the
+body. I have prepared code for you to collapse that data so (we assume)
+each side of the body is equal. This is one option. You can choose to
+keep the overall data and address NA's (missing values) if your research
+question is tied to body symmetry.
+
+In the notebook on correlation in week 6, the section
+\texttt{1.2.3.3\ Measure} has some code on to ``getOne'' measurement
+from the left or right. If one is NA, it returns the other. If they both
+are available, it returns the mean.
+
+\hypertarget{data-creation}{%
+\paragraph{Data creation}\label{data-creation}}
+
+There may be a few data features you may want to create. I have the
+``arm span'' and information about the ``armpits'' which would enable
+you to compute the internal ``chest width'' (from armpit to armpit).
+There may be other data you can create in a similar fashion.
+
+\hypertarget{data-proportions}{%
+\paragraph{Data proportions}\label{data-proportions}}
+
+It is very likely that for each measure row, you would want to create
+``scaled variables to that person's height'', also known as a
+proportion.
+
+Alternatively, you could scale everything to a person's head height.
+
+Alternatively, you could review lots of different proportions. I
+suggested at one point that the foot-size and the ``upper arm''
+(elbow-pit to arm-pit) are the same size (some basic Pythagorean theorem
+could get you there or close).
+
+There are lots of possibilities, all depends on your interests.
+
+\begin{itemize}
+\item
+  Some say the unit of length of a ``one foot'' that we now decompose
+  into 12 inches was a function of the actual length of the King's foot
+  in England, and would change when a new King was crowned.
+\item
+  Another measure of length, the ``cubit'' is derived from the Latin
+  word for ``elbow''
+\item
+  Galileo Galilei, the famous Italian polymath, literally sold his body
+  parts when he died (quite the entrepreneur). He had extremely long
+  fingers. In the museum in Firenze, they have on display a few of the
+  fingers recovered. Yes, I have seen them
+  \url{https://www.museogalileo.it/it/}. Most people miss this museum
+  because they are too busy admiring David's proportions at the nearby
+  Academia Gallery
+  \url{https://en.wikipedia.org/wiki/David_(Michelangelo)}.
+\end{itemize}
+
+\hypertarget{data-selection}{%
+\paragraph{Data selection}\label{data-selection}}
+
+Which columns are you going to use in your analysis. The ``covariates''
+will be necessary to describe the sample procedure, but for your
+research question maybe you just use a few of those, or none of those.
+
+The summary statistics on the sample ``covariates'' and on the overall
+data are dependent on which columns you want to research. This depends,
+or is constrained by your research question. For example, in the
+``Joireman paper'' we did collect a lot of other data, and even showed
+them a variant of an exercise motivator (Nike Ad):
+
+\url{http://www.mshaffer.com/arizona/videos/exercise/010.mp3}
+
+\url{http://www.mshaffer.com/arizona/videos/exercise/101.mp4}
+
+\url{http://www.mshaffer.com/arizona/videos/exercise/110.mp4}
+
+\url{http://www.mshaffer.com/arizona/videos/exercise/111.mp4}
+
+\hypertarget{project-research-question}{%
+\subsection{Project Research Question}\label{project-research-question}}
+
+Have you formulated one primary research question and possibly 2-3
+subquestions. Or maybe 2-3 primary questions?
+
+The project was initially intended to be an exploration of the original
+data (distances), the computed proportions (as a function of head
+height), and its relationship to correlations. However, you now have
+some experience with basic clustering techniques, so you could try to
+use them as well. I would say \textbf{focus} on the key research
+question and don't deviate too far afield into clustering techniques
+that you don't report on ``exploratory findings'' that inform your
+research question.
+
+\hypertarget{preparation-for-final-writeup}{%
+\section{Preparation for Final
+Writeup}\label{preparation-for-final-writeup}}
+
+Use this space to include and run code that gets your data and research
+question prepared.
+
+Alternatively, you can use another notebook. You will submit a final
+``ZIP'' file that contains the supporting documents and the final
+``PDF'' product. I will build the template for the ``PDF'' product and
+help with the tasks new to you in that regard.
+
+The data cleanup, the research question, and the analysis is up to you.
+
+I will be supporting the process of turning the results and data you
+prepare into a ``work product''.
+
+
+
+
+%% appendices go here!
+
+
+\newpage
+\theendnotes
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  biblio %%%%%%%%
+\newpage
+\begin{auxmulticols}{}
+\singlespacing 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  biblio %%%%%%%%
+\end{auxmulticols}
+
+\newpage
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+
+
+
+\end{document}

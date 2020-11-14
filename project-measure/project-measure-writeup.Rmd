@@ -1,0 +1,386 @@
+---
+title: The Difference Between You and An NBA Player.
+author:
+- name: Nahom Debela
+  affiliation: Washington State University
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    keep_tex: yes
+    fig_caption: yes
+    toc: yes
+    toc_depth: 3
+    number_sections: yes
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ../latex-templates/report.tex
+  html_document:
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: '3'
+abstract: |
+  \noindent In this report I walk through my steps in answering my research questions. I seek to find relationships between NBA measurement data and measurements from ordinary people. I perform statistical data analysis to uncover trends and solve my questions.  \vspace{0.12in}
+  
+sectionnumberdepth: 3
+titleEndnotes: ENDNOTES
+titleReferences: REFERENCES
+columnsReferences: 2
+titleTOC: TABLE OF CONTENTS
+bibliography: ./../biblio/master.bib
+bibliostyle: ./../biblio/ormsv080.bst
+subtitle: Comparing the Ape Indexes of NBA Players and Ordinary Males.
+---
+
+```{r, setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+
+
+```
+
+
+\section{Introduction}
+\label{sec:intro}
+
+
+
+\begin{figure}[!ht]
+    \begin{subfigure}[h]{0.4\textwidth}
+    \centering
+    %  trim={<left> <lower> <right> <upper>}
+    % https://shantoroy.com/latex/add-subfig-in-latex/
+            \includegraphics[trim = 0 0 11.25cm 0,clip,scale=1]{figures/Vitruvian.pdf}
+        \caption{Figure 1: Male Vitruvian Figure }
+        \label{fig:sub-first}
+    \end{subfigure}
+    \begin{subfigure}[h]{0.4\textwidth}
+    \centering
+        \includegraphics[trim =  0 0.5cm 4.0cm 0,clip,scale=1]{figures/nba.png}
+            \caption{Figure 2: NBA Measurements}
+        \label{fig:sub-second}
+    \end{subfigure}
+    \vspace{2.5mm}
+    \hrule
+    \vspace{2.5mm}
+        \caption{\textbf{  }The Vitruvian drawing was made by Italian polymath Leonardo da Vinci in about 1490. It is based upon the theory that the human body can be symmetrically inscribed within both a circle and a square \newline  \newline   \textbf{Figure 2:} NBA Data of Measurements that were taken from the NBA website. }
+        The
+        \newline  \newline 
+        \label{fig:combined}
+    \vspace{-2.5mm}
+    \hrule
+\end{figure}
+
+\newpage
+
+\section{Research Question: How does the ratio between height and arm span compare between NBA players and normal males?}
+\label{sec:rq}
+
+
+\subsection{Is there a strong relationship between height and arm span?}
+\label{sec:rq2}
+
+
+\subsection{Has the ratio between height and arm span changed over time for NBA Players?}
+\label{sec:rq3}
+
+\begin{figure}[!ht]
+	\hrule
+	\caption{ \textbf{Wingpsan} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{figures/reach.png} }
+	\end{center}
+	\label{fig:handout-1}
+	\hrule
+\end{figure}
+
+
+\section{Data Description}
+\label{sec:data}
+
+I've used 3 separate data sets. One data set consists of measurement data from participants who have filled out the handout. From this data I have used "Arm Span","Height", and I have calculated "Ape Index". Ape Index  is simply the ratio between one's height and arm span. In my analysis, I used Ape Index to observe if there is a relationship between the average NBA players ape index and the ordinary person's ape index.
+\newline
+\newline
+
+\noindent The other 2 data sets are NBA measurent data from "Kaggle". This dataset came as one file. I filtered the NBA data and split it into 2 separate data sets. One included previous NBA players that played in 2002 and before. The other contains recent NBA players who have played in 2016 and after. For my analysis, I used: "Arm Span", "Height", and I have calculated "Ape Index " for both time frames. These datasets are helpful in answering: Does the ratio between height and arm span change over time?
+\newpage
+
+\subsection{Summary of Sample}
+\label{sec:data-sample}
+
+Gender: This is a factor. Possible values include, male, female, other.
+100% of my sample is "male."\vspace{2.5mm}
+
+\noindent Units: All my observations are in cm.
+
+\noindent Age: All my observations are samples where age is at least 18.
+
+
+\noindent The rest of my data includes Height, Wingspan and Ape Scale for all 3 datasets.
+\vspace{2.5mm}
+\label{sec:Summary of Sample}
+
+\begin{figure}[!ht]
+	\hrule
+	\caption{ \textbf{Summary Table} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{figures/summary.png} }
+	\end{center}
+	\label{fig:handout-1}
+	\hrule
+\end{figure}
+
+
+\vspace{2.5mm}
+
+\noindent From all 3 datasets the largest mean in Ape scale is in the 2015 NBA Data set. 
+
+\noindent Ape Scale seems to be the largest in the 2015 NBA dataset (M = 1.0495), followed by 2002 NBA Dataset (M=1.0449cm) and finally the Normal measurement data (M=1.0112cm)
+\vspace{2.5mm}
+
+\noindent Wingspan seems to be the largest in the 2015 NBA dataset (M = 212.0), followed by 2002 NBA Dataset (M=208.4cm) and finally the Normal measurement data (M=176.3cm)
+
+\noindent Wingpsan of NBA players in both datasets is on average larger than the normal males wingspan by 33.9cm.
+\vspace{1mm}
+
+\noindent Height seems to be the largest in the 2015 NBA dataset (M = 202.0), followed by 2002 NBA Dataset (M=199.5cm) and finally the Normal measurement data (M=174.4cm)
+
+\noindent Height of NBA players in both datasets is on average larger than the normal males height by 26.4cm.
+
+\newpage
+
+
+\begin{figure}[!ht]
+	\hrule
+	\caption{ \textbf{Height vs Wingspan Plot} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{figures/heightvswingspan.png} }
+	\end{center}
+	\label{sec:Summary of Sample}
+	\hrule
+\end{figure}
+
+\vspace{2.5mm}
+
+\noindent Clearly, we can see from the plot that NBA Height and Wingspan in both 2015 and 2002 are significantly larger than the normal males height and weight.
+\vspace{2.5mm}
+
+\noindent The lines of NBA players in 2015 and 2012 are very close and it is difficult to make any assumptions.
+
+\newpage
+
+\subsection{Summary Statistics of Data}
+
+
+
+\noindent Correlation Table is on Next Page
+\newpage
+\input{tables/table-correlation}
+
+\label{sec:data-summary}
+
+\newpage
+
+
+\section{Key Findings}
+\label{sec:findings}
+
+From my correlation table I have several correlating pairs.
+
+\noindent For Normal Males:
+\noindent Wingspan correlates with height corr=.67
+
+\noindent For NBA players in 2015:
+Wingspan correlates with height corr=.86
+
+\noindent For NBA players in 2002:
+Wingspan correlates with height corr=.77
+
+\vspace{5mm}
+
+\noindent Is there a strong relationship between height and arm span?
+\newline
+
+\noindent These three correlations tell me that Wingspan and Height have a strong positive relationship.
+
+\noindent Additionally, if we take a look at the mean of wingspan in any of the datasets, It is not very different than the height.
+\newline
+\noindent I can conclude that the relationship Wingspan and Height is strong. 
+
+\vspace{5mm}
+
+\noindent Has the ratio between height and arm span changed over time for NBA Players?
+\newline
+
+\noindent I found the ape index of both NBA datasets (2002, 2015):
+\newline
+\noindent NBA ape index 2002: 1.0449
+\newline
+\noindent NBA ape index 2015: 1.0495
+\newline
+\noindent There is no significant difference between Ape index of NBA players who played before or during the 2002 season and from NBA players who played after the 2015 season.
+
+\vspace{5mm}
+
+\noindent How does the ratio between height and arm span compare between NBA players and normal males?
+\newline
+
+\noindent Since ape index is extremely close in the NBA data I can just average it out as one NBA ape index to compare to the normal males ape index.
+\newline
+\noindent I found the average ape index of both NBA datasets (2002, 2015):
+\newline
+\noindent Average NBA ape index (2002,2015): 1.0472
+\newline
+\noindent Male ape index: 1.0112
+\newline
+\noindent The ape index of NBA players is slightly higher than the normals males.
+
+\newpage
+\section{Conclusion}
+\label{sec:conclusion}
+
+\noindent I set out to answer 3 questions:
+\newline
+\noindent Is there a strong relationship between height and arm span?
+\newline
+\noindent Has the ratio between height and arm span changed over time for NBA Players?
+\newline
+\noindent How does the ratio between height and arm span compare between NBA players and normal males?
+\newline
+\newline
+\indent From my research and analysis I can conclude that there is in fact a strong relationship between height and arm span. They seem to be highly correlated. It seems as height increases, arm span increases and I am not very surprised with these results because typically the human body's wingspan is the same as their height. This theory is taken from Leonardo da Vinci.
+\vspace{5mm}
+
+To answer my next two questions I found the proportion between ape scale and height which is known as "ape index". I compared this ape index score between my two NBA measurement samples and they turned out to be almost identical in ape index. From this I can conclude: there is no significant change over time between NBA player proportions of height to wingspan.
+\vspace{5mm}
+
+Finally, I wanted to know how the proportion of height and wingspan differed between normal males and NBA players. From my samples of 49 observations, I was not able to find a significant difference. Although ape index was larger for NBA players than normal males, I cannot safely conclude that NBA players have larger indexes. 
+
+\newpage
+\section{APPENDICES}
+\label{sec:appendix}
+
+
+
+\subsection{Data Provenance}
+\label{sec:appendix-data-provenance}
+
+My measurement data which came from those that have filled out the handout consists of 428 rows and 37 columns. This data contains both numerical and categorical data. I filtered the data to only include Male samples of at least 18 years old. It is my belief this is an appropriate age to select since the current minimum age to play in the NBA is 18. After data cleansing, data wrangling and filtering, I was left with 49 observations to work with. I went from 126 rows to 49 after removing all outliers, which points to the much of the data being inaccurate.
+\newline
+\newline
+
+My NBA dataset that came from Kaggle is titled "NBA Players - Measurements (1947-2017)." The data set included 4551 rows and 18 columns. I was able to find a popular dataset that was publicly shared by Fernando Blanco on Kaggle. The Data represents numerous body measurements of players who have were in the NBA from 1947, all the way to 2017. I split my data into two seperate data sets: NBA players who played before or during the 2002 season and NBA players who played after the 2015 season. From these two data pools, I took random samples of 49 observations to match the number of observations from my measurement data. I also made a final merged dataset, In which I merged my 3 datasets and used in my analysis.
+\newline
+\newline
+
+\subsection{Correlation Table}
+\label{sec:Summary Statistics of Data}
+
+The correlation table was made by running the function BuildLatexCorrelationTable(). This function was made by instructor: Monte Shaffer. The code to run the correlation table is in another file, however the output of the function which is a .tex file is already stored in a tables folder.
+\newline
+\newline
+
+\subsection{Kaggle Reference}
+\label{sec:References}
+
+Kaggle is a data science community website that offers thousands of #datasets.
+\newline
+https://www.kaggle.com/whitefero/nba-players-measurements-19472017
+\newline
+\vspace{2.5mm}
+Vitruvian Drawing by Leonardo da Vinci
+\newline
+https://en.wikipedia.org/wiki/Vitruvian_Man
+
+\newpage
+\subsubsection{Data Collection Handout}
+\label{sec:appendix-data-handout}
+
+\begin{figure}[!ht]
+	\hrule
+	\caption{ \textbf{Handout Page 1} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{pdfs/handout1.pdf} }
+	\end{center}
+	\label{fig:handout-1}
+	\hrule
+\end{figure}
+
+
+\newpage
+
+\begin{figure}[!ht]
+	\hrule
+	\caption{ \textbf{Handout Page 2} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{pdfs/handout2.pdf} }
+	\end{center}
+	\label{fig:handout-2}
+	\hrule
+\end{figure}
+
+\newpage
+
+
+
+
+\subsection{Preparing the Report Workspace as a subsection}
+\label{sec:appendix-setup}
+
+\subsubsection{Preparing the Report Workspace as a subsubsection}
+\label{sec:appendix-setup2}
+
+\paragraph{Preparing the Report Workspace as a paragraph}
+\label{sec:appendix-setup3}
+
+\subparagraph{Preparing the Report Workspace as a subparagrah}
+\label{sec:appendix-setup4}
+
+Below is the necessary functions and libraries required to run the code referenced in this document.
+
+```{r,appendix-setup,message=FALSE}
+
+library(devtools) # required for source_url
+my.source = 'local';
+local.path = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/";
+local.data.path.to.secret = "C:/Users/nahom/Desktop/STATS 419/datasets/measure/";
+local.data.path.to.secret.NBA = "C:/Users/nahom/Desktop/STATS 419/datasets/measure-NBA/"
+source( paste0(local.path, "functions/libraries.R"), local = T);
+
+library(humanVerseWSU);
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+source_url("https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/humanVerseWSU/R/functions-dataframe.R");
+# EDA functions
+source_url( paste0(path.github,"humanVerseWSU/R/functions-EDA.R") );  #  
+source( paste0(local.path, "functions/functions-project-measure.R"), local = T);
+```
+
+Below is the code to load the data and prepare it for analysis.
+
+```{r,appendix-secret,message=FALSE}
+measure.uncleaned = readData("measure-students.txt")
+measure.cleaned = dataCleaning(measure.uncleaned)
+
+nbaData.uncleaned = readDataNBA("Player - Bio Stats (1947-2017).csv")
+nbaData.cleaned.2015 = cleanNbaData2015(nbaData.uncleaned)
+nbaData.cleaned.2002 = cleanNbaData2002(nbaData.uncleaned)
+```
+
+Below is the code I used in my analysis and plots
+
+```{r,appendix-code,message=FALSE}
+# For summary tables
+# I called get_summary() function
+# get_summary(measure.cleaned.df,nbaData.2002,nbaData.2015)
+
+# For height vs wingspan plot
+# I called displayPlotHeightWing
+# displayPlotHeightWing(measure.cleaned.df,nbaData.2015,nbaData.2002)
+
+
+```
+
+
+
+
+
+
