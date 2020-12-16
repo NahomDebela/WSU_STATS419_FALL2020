@@ -1,0 +1,239 @@
+---
+title: Will vs Denzel.
+author:
+- name: Nahom Debela
+  affiliation: Washington State University
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    keep_tex: yes
+    fig_caption: yes
+    toc: no
+    toc_depth: 0
+    number_sections: yes
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ../../latex-templates/report.tex
+  html_document:
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: '3'
+abstract: |
+  \noindent Comparing IMDB data to reveal who the better actor is between Will Smith and Denzel Washington \vspace{0.12in}
+  
+sectionnumberdepth: 3
+titleEndnotes: ENDNOTES
+titleReferences: REFERENCES
+columnsReferences: 2
+titleTOC: TABLE OF CONTENTS
+bibliography: ./../biblio/master.bib
+bibliostyle: ./../biblio/ormsv080.bst
+subtitle: Who is a better actor?
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(humanVerseWSU);
+library(devtools)
+library(imdb)
+library(ggplot2)
+
+my.source = 'local';
+local.path = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/";
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+source_url("https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/humanVerseWSU/R/functions-dataframe.R");
+
+source( paste0(local.path, "functions/libraries.R"), local = T);
+source_url( paste0(path.github,"humanVerseWSU/R/functions-EDA.R") ); #
+source( paste0(local.path, "functions/functions-project-measure.R"), local = T);
+source( paste0(local.path, "functions/willVdenzel Functions.R"), local = T);
+source( paste0(local.path, "functions/functions-dataframe.R"), local = T);
+```
+
+```{r,code,message=FALSE, echo=FALSE}
+
+imdb::loadDataIMDB();
+```
+
+```{r,codeId,message=FALSE,echo=FALSE}
+
+willID = getActorId("Will Smith")
+denzelID = getActorId("Denzel Washington")
+
+willInfoDf = getActorInfo('Will Smith')
+denzelInfoDf = getActorInfo('Denzel Washington')
+```
+
+\vspace{5mm}
+
+\noindent In order to find out who the better actor is I had to determine which features were relevant for comparing these actors. I did not want to compare the movie profit related to each of the actors because I believe that a larger profit margin implies more fan appeal, advertising, or simply popularity. This doesn't answer my research question of who is the better actor. I couldn't simply choose who had more movies or who has more experience because that doesn't fit the definition of 'better.' The formal definition of better is "of a more excellent or effective type or quality." Although these actors are both talented in their own right, my analysis has led me to the conclusion that ___ is a better actor than ___.
+
+\vspace{3mm}
+
+\begin{figure}[!ht]
+	
+	\begin{center}
+	    \scalebox{0.95}{	\includegraphics[trim = 0 0 2cm 0,clip,width=0.85\textwidth]{figures/acting.jpg} }
+	\end{center}
+	\label{fig:handout-1}
+	
+\end{figure}
+
+\vspace{4mm}
+
+\noindent Both Will Smith and Denzel Washington are currently starring in films. Will, who is 52 years old began acting in films in 1992. While Denzel, Who is 60 years old began acting in films in 1981. In this report I compare these actors by multiple factors both directly relating to the movies ranking themselves and by the crew members each actor had available to them. I believe to objectively determine who is a better actor I must not only compare the actors side by side, but also the level of help each actor had in the movies. I compared the directors, co-Stars, and writers of both Will and Denzel's movies to see the true effectiveness they had in their films.
+
+\newpage
+\vspace{4mm}
+\subsection{Summary of Sample}
+\label{sec:data-sample}
+\noindent 
+\vspace{10mm}
+```{r,codeCoStars,message=FALSE, echo=FALSE}
+row = imdb.data$all.movies.creatives[imdb.data$all.movies.creatives$role == "director",] 
+colnames(row)[3] <- "Directornmid"
+
+colnames(willInfoDf)[1] <- "ttid"
+colnames(denzelInfoDf)[1] <- "ttid"
+
+willInfoDf.updated <- merge(row, willInfoDf, by = c("ttid"))
+denzelInfoDf.updated <- merge(row, denzelInfoDf, by = c("ttid"))
+
+row4 = imdb.data$all.movies.creatives[imdb.data$all.movies.creatives$role == "star" & imdb.data$all.movies.creatives$role != willID ,]
+
+row5 = imdb.data$all.movies.creatives[imdb.data$all.movies.creatives$role == "star" & imdb.data$all.movies.creatives$role != denzelID ,]
+
+willInfoDf.coStars = merge(row4, willInfoDf, by=c("ttid"))
+denzelInfoDf.coStars = merge(row5, denzelInfoDf, by=c("ttid"))
+
+cat("Will Smith will has or will act in a total 34 of Movies by around 2021","\n")
+cat("Denzel Washingon has or will act in a total 45 of Movies by around 2021","\n")
+
+cat("Will Smith has worked alongside:", length(willInfoDf.coStars$nmid), "Co Stars", "\n")
+cat("Denzel Washington has worked alongside:", length(denzelInfoDf.coStars$nmid), "Co Stars", "\n")
+
+# Headlining
+coStarsWill.headlining = intersect(willInfoDf.coStars$nmid, imdb.data$headliners$actors)
+cat("Number of Headlining Co-Stars for Will: ", length(coStarsWill.headlining), "\n")
+coStarsDenzel.headlining = intersect(denzelInfoDf.coStars$nmid, imdb.data$headliners$actors)
+cat("Number of Headlining Co-Stars for Denzel: ", length(coStarsDenzel.headlining), "\n")
+
+# Popular 50
+coStarsWill.pop50 = intersect(imdb.data$actors$popular50, willInfoDf.coStars$nmid)
+coStarsDenzel.pop50 = intersect(imdb.data$actors$popular50, denzelInfoDf.coStars$nmid)
+cat("Number of Popular 50 Co-Stars for Will: ", length(coStarsWill.pop50), "\n")
+cat("Number of Popular 50 Co-Stars for Denzel: ", length(coStarsDenzel.pop50), "\n")
+
+# Top 250
+coStarsWill.top250 =intersect(imdb.data$actors$top250, willInfoDf.coStars$nmid)
+coStarsDenzel.top250 = intersect(imdb.data$actors$top250, denzelInfoDf.coStars$nmid)
+cat("Number of Top 250 Co-Stars for Will: ", length(coStarsWill.top250), "\n")
+cat("Number of Top 250 Co-Stars for Denzel: ", length(coStarsDenzel.top250), "\n")
+
+# Gem 50
+coStarsWill.gem50 = intersect(imdb.data$actors$gem50, willInfoDf.coStars$nmid)
+coStarsDenzel.gem50 = intersect(imdb.data$actors$gem50, denzelInfoDf.coStars$nmid)
+cat("Number of Gem 50 co-Stars for Will: ", length(coStarsWill.gem50), "\n")
+cat("Number of Gem 50 co-Stars for Denzel: ", length(coStarsDenzel.gem50), "\n")
+
+will.updated.starRank = imdb.data$all.actors.info[,c("nmid","starmeter.rank")]
+# Get only rows with star rank
+will.updated.starRank = will.updated.starRank[!(is.na(will.updated.starRank$starmeter.rank)),]
+
+coStarsWill.starRank = intersect(will.updated.starRank$nmid, willInfoDf.coStars$nmid)
+
+denzel.updated.starRank = imdb.data$all.actors.info[,c("nmid","starmeter.rank")]
+# Get only rows with star rank
+denzel.updated.starRank = denzel.updated.starRank[!(is.na(denzel.updated.starRank$starmeter.rank)),]
+
+coStarsDenzel.starRank = intersect(denzel.updated.starRank$nmid, denzelInfoDf.coStars$nmid)
+
+cat("Number of star ranked co Stars for Will: ", length(coStarsWill.starRank), "\n")
+cat("Number of star ranked co Stars for Denzel: ", length(coStarsDenzel.starRank), "\n")
+```
+
+```{r,codeDirectors,message=FALSE, echo=FALSE}
+a = intersect(willInfoDf.updated$Directornmid, imdb.data$headliners$directors)
+cat("Number of Top Directors for Will: ", length(a), "\n")
+
+b = intersect(denzelInfoDf.updated$Directornmid, imdb.data$headliners$directors)
+cat("Number of Top Directors for Denzel: ", length(b), "\n")
+
+```
+
+```{r,codeWriters,message=FALSE,echo=FALSE}
+
+row2 = imdb.data$all.movies.creatives[imdb.data$all.movies.creatives$role == "writer",] 
+colnames(row2)[3] <- "Writer_nmid"
+
+willInfoDf.updated2 <- merge(row2, willInfoDf, by = c("ttid"))
+denzelInfoDf.updated2 <- merge(row2, denzelInfoDf, by = c("ttid"))
+
+a = intersect(willInfoDf.updated2$Writer_nmid, imdb.data$headliners$writers)
+cat("Number of Top Writers for Will: ", length(a), "\n")
+
+b = intersect(denzelInfoDf.updated2$Writer_nmid, imdb.data$headliners$writers)
+cat("Number of Top Writers for Denzel: ", length(b), "\n")
+
+```
+
+```{r,codeRatings,message=FALSE,echo = FALSE}
+
+# Merging dataframes to get more information for Will and Denzel
+info = imdb.data$all.movies.actors.characters[imdb.data$all.movies.actors.characters$nmid == willID,] 
+
+willInfoDf = merge(info,willInfoDf, by = c("ttid"))
+
+info = imdb.data$all.movies.actors.characters[imdb.data$all.movies.actors.characters$nmid == denzelID,] 
+
+denzelInfoDf = merge(info,denzelInfoDf, by = c("ttid"))
+
+willInfoDf = merge(imdb.data$all.actors.movies,willInfoDf, by = c("ttid"))
+denzelInfoDf = merge(imdb.data$all.actors.movies,denzelInfoDf, by = c("ttid"))
+
+# Removed movie: to many NA's, didn't think movie was worth keeping
+willInfoDf <- willInfoDf[!(willInfoDf$title=="The 100 Best Black Movies (Ever)"),]
+denzelInfoDf <- denzelInfoDf[!(denzelInfoDf$title=="The 100 Best Black Movies (Ever)"),]
+
+id.col = c(rep(willID,34))
+willInfoDf["nmid"] = id.col
+willInfoDf = merge(imdb.data$all.actors.rank, willInfoDf, by = c("ttid", "nmid"))
+
+id.col2 = c(rep(denzelID,45))
+denzelInfoDf["nmid"] = id.col2
+denzelInfoDf = merge(imdb.data$all.actors.rank, denzelInfoDf, by = c("ttid", "nmid"))
+
+mean.ratings.will = mean(willInfoDf[,9], na.rm=TRUE)
+cat("The average rating of movies that have aired featuring Will Smith is:", mean.ratings.will) 
+
+mean.ratings.denzel = mean(denzelInfoDf[,9], na.rm=TRUE)
+cat("The average rating of movies that have aired featuring Denzel Washington is:", mean.ratings.denzel, "\n") 
+
+```
+\newpage
+\subsection{Results}
+\label{sec:results}
+\vspace{10mm}
+```{r,codePlot,message=FALSE,echo=FALSE}
+mydata <- data.frame(Pop50=c(length(coStarsWill.pop50),length(coStarsDenzel.pop50)), Headliners=c(length(coStarsWill.headlining)
+,length(coStarsDenzel.headlining)
+),Top250=c(length(coStarsWill.top250)
+,length(coStarsDenzel.top250)), Gem250=c(length(coStarsWill.gem50),length(coStarsDenzel.gem50)), StarRankings = c(length(coStarsWill.starRank), length(coStarsDenzel.starRank)))
+barplot(as.matrix(mydata), main="Each Actors Co Stars Rankings", ylab="Number of Co Stars",xlab = "Rankings", beside=TRUE, col=terrain.colors(2))
+legend("top", c("Will Smith", "Denzel"), cex=1, 
+       fill=terrain.colors(2))
+```
+\newpage
+\vspace{10mm}
+\subsection{Conclusion}
+\label{sec:conclusion}
+\noindent In conclusion I pick Will Smith as the better actor over Denzel Washington. Throughout my analysis I noticed that Denzel Washington overall had a higher average rating than Will Smith. Both these actors are very talented, however in order to compare them I must compare their performances and take into account the talent that was around them in the process. This is where I noticed a significant difference between the actors. I decided that because Will Smith had far less talent around him and only had a slight drop off in average rating: Will Smith is the better actor. I can suggest that as an actor increases the talent around them, the ratings of the movies increase. This is exactly the case between these two actors. 
+
+\vspace{7mm}
+\noindent Denzel Washington has starred in about 25% more movies than Will Smith. Additionally, in every case he has had far more prominent writers, directors, and co-stars than will smith. Of course this is expected since he has more movies. However, if these artists had the same amount of talent around them, the ratio should only be about 4:3. This is not the case. This was especially noticable in the directors and writers for these actors. Denzel has had significantly more prominent directors than Will. Denzel has had 9 directors who have headlined at least 15 times as a director, compared to Smith's 2. Also Denzel has had significantly more prominent writers than Will. Denzel has had 5 writers who have headlined at least 15 times as a writer, compared to Will's 2. That is about a much larger ratio in favor of Denzel. 
+
+\vspace{7mm}
+\noindent Overall, It was very difficult to choose between these two actors. Though undoubtedly, the evidence is there. With less prominent Co-Stars, Writers and directors Will Smith was able to star in movies that were on average rated 6.5, compared to Denzels 6.9. That is only a .4 drop off compared to Denzels average movie rating. This difference is not all that significant to simply choose Denzel, so, by collecting more information such as their cast mates rankings I was able to narrow down the features that determine who the 'better' actor is: Will Smith.
+

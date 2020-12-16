@@ -1,0 +1,287 @@
+---
+title: 'R Notebook: Workspace Audit for [nahom.debela]'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 5
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+
+library(devtools);
+
+library(humanVerseWSU);
+
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+include.me = paste0(path.github, "misc/functions-nlp.R");
+source_url( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-str.R");
+source_url( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-stack.R");
+source_url( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-pos.R");
+source_url( include.me );
+
+include.me = paste0(path.github, "humanVerseWSU/R/functions-encryption.R");
+source_url( include.me );
+
+
+
+
+###### UPDATES TO dataframe subset function ######
+# inflation adjustments for NA ... and improvements on subsetting
+include.me = paste0(path.github, "humanVerseWSU/R/functions-str.R");
+source_url( include.me );
+
+include.me = paste0(path.github, "humanVerseWSU/R/functions-file.R");
+source_url( include.me );
+
+include.me = paste0(path.github, "humanVerseWSU/R/functions-dataframe.R");
+source_url( include.me );
+
+include.me = paste0(path.github, "humanVerseWSU/R/functions-inflation.R");
+source_url( include.me );
+
+```
+
+# Workspace Audit
+
+You should place this file in your github local path for this course, in a subfolder called "final" ... for me that is `C:/_git_/WSU_STATS419_FALL2020/final/`;
+
+
+## Set your WSU id and location of your github USERNAME/REPO
+```{r}
+wsu.id = "nahom.debela"; # change this to yours.
+github.repository = "MonteShaffer/WSU_STATS419_FALL2020";
+# be sure to change the notebook title at the top of this document to be "you" based on your wsu.id
+```
+
+### Code Frequency on GitHub
+Browse to <https://github.com/MonteShaffer/WSU_STATS419_FALL2020/graphs/code-frequency> where you replace my repository name with yours.  Screenshot and include the graphic in this folder, named "github-code-frequency.png".
+
+<IMG src='github-code-frequency.png' style="border: 2px black solid;" />
+<div>**Source: <a href="https://github.com/MonteShaffer/WSU_STATS419_FALL2020/graphs/code-frequency">GitHub</a>**</div>
+
+
+### Commit Frequency on GitHub
+Browse to <https://github.com/MonteShaffer/WSU_STATS419_FALL2020/graphs/commit-activity> where you replace my repository name with yours.  Screenshot and include the graphic in this folder, named "github-commits.png". 
+
+<IMG src='github-commits.png' style="border: 2px black solid;" />
+<div>**Source: <a href="https://github.com/MonteShaffer/WSU_STATS419_FALL2020/graphs/commit-activity">GitHub</a>**</div>
+
+
+## General Workspace Environment Data
+```{r}
+path.to.git.local = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/";
+setwd(path.to.git.local);
+path.to.git.final = paste0(path.to.git.local,"final/workspaceAudit/");
+```
+
+## General Workspace Environment Data
+```{r}
+my.object = list();
+
+sg = Sys.getenv();
+  snames = names(sg); 
+  svals = as.character(sg);
+sgdf = as.data.frame(cbind(snames,svals));
+
+my.object$environment = sgdf;
+
+sw = Sys.which(c("ftp", "ping", "texi2dvi", "this-does-not-exist", "make", "latex", "pdflatex", "luatex", "tinytex", "cmd", "git", "python", "pip", "tracert", "traceroute", "VirtualBox", "Dropbox"));
+  snames = names(sw); 
+  svals = as.character(sw);
+swdf = as.data.frame(cbind(snames,svals));
+
+my.object$bin = swdf;
+my.object$packages = as.data.frame(installed.packages());
+
+my.object$local.dirs = list.dirs(path.to.git.local,recursive = FALSE);
+my.object$local.files = list.files(path.to.git.local,recursive = TRUE);
+```
+
+## Local Computer Setup
+
+### Dropbox
+Using your file-explorer, browse to your "Dropbox" folder on your computer, enter the "__student_access__" folder for this course, and take a screenshot.  Place in this folder "final/dropbox.png" ...
+
+<IMG src='dropbox.png' style="border: 2px black solid;" />
+<div>**Source: LOCAL COMPUTER**</div>
+
+### Git tool
+
+Take a screenshot of your gitbash tool (or if you use Github Desktop, that will do).  Be certain the screenshot is referencing your repository for this course. Place in this folder "final/git.png" ...
+
+<IMG src='git.png' style="border: 2px black solid;" />
+<div>**Source: LOCAL COMPUTER**</div>
+
+### Git History
+
+Open your git tool from the command line and browse to the correct folder ...  Type `git status` to verify you are in the right place.
+
+Now type: `git log --shortstat --pretty=format:'%h|%t|%p|%ai|%ae|%an|%ci|%ce|%cn|%N|%f|%s|%b' | paste - - - > final/git-history.log` which will create a file with your git history as a text file.  We will import and perform a basic graph.
+
+
+```{r}
+#  git log --shortstat --pretty=format:'"%h","%an","%ae","%aD","%s",' | paste - - - > final/git-history.log
+# git log --oneline --decorate > final/git-history.log
+# git log --shortstat --pretty=format:'%h|%t|%p|%ai|%ae|%an|%ci|%ce|%cn|%N|%f|%s|%b' > final/git-history.log
+###################################################
+############ BELOW IS THE FINAL ANSWER ############
+###################################################
+# git log --shortstat --pretty=format:'%h|%t|%p|%ai|%ae|%an|%ci|%ce|%cn|%N|%f|%s|%b' | paste - - - > final/git-history.log
+
+# https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-log.html#_pretty_formats
+```
+
+#### Git Log Data
+```{r}
+my.git = list();
+
+raw.df = read.csv(paste0(path.to.git.final,"git-history.log"), header=FALSE, sep="|", quote="");
+colnames(raw.df) = c("hash","tree","parent","author.date","author.email","author.name","commit.date","commit.email","commit.name","commit.notes","content.f","content.s","content.b");
+#raw.df;
+
+total.commits = nrow(raw.df);
+
+
+
+date.strings = raw.df$commit.date;
+date.types = c("%m","%d","%W","%j","%u","%H");
+date.names = c("month", "day", "year.week", "year.day", "day.week","day.hour");   
+
+time.df = convertDateStringToFormat(date.strings, date.types, date.names);
+#time.df;
+
+changes.df = NULL;
+for(i in 1:total.commits)
+  {
+  my.commit = removeWhiteSpace(strsplit(raw.df$content.b[i],",",fixed=TRUE)[[1]]);
+  
+  my.detail = strsplit(my.commit," ",fixed=TRUE);
+  
+  row = c(0,0,0);
+  for(j in 1:length(my.detail))
+    {
+    val = as.numeric( my.detail[[j]][1] );
+    row[j] = val;
+    }
+  changes.df = rbind(changes.df,row);
+  }
+
+changes.df = as.data.frame(changes.df);
+colnames(changes.df) = c("file","insert","delete");
+#changes.df;
+
+log.df = cbind(raw.df[,c(1:3,7:9,12)], time.df, changes.df);
+
+my.git$raw.df = raw.df;
+my.git$total.commits = total.commits;
+my.git$time.df = time.df;
+my.git$changes.df = changes.df;
+my.git$log.df = log.df;
+
+log.df;
+```
+
+#### Git Log Graphics
+
+```{r}
+plot(log.df$year.day, log.df$file, bty="n", type="l");
+
+plot(log.df$year.day, log.df$insert, bty="n", type="l");
+
+plot(log.df$year.day, log.df$delete, bty="n", type="l");
+```
+
+```{r}
+weeks = sort(unique(log.df$year.week));
+n.weeks = length(weeks);
+weeks.file = weeks.insert = weeks.delete = numeric(n.weeks);
+
+days = 1:7;
+n.days = length(days);
+days.file = days.insert = days.delete = numeric(n.days);
+
+hours = 0:23;
+n.hours = length(hours);
+hours.file = hours.insert = hours.delete = numeric(n.hours);
+
+for(i in 1:total.commits)
+  {
+  my.hour = log.df$day.hour[i];
+    idx.hour = which(my.hour == hours)[1];
+  my.week = log.df$year.week[i];
+    idx.week = which(my.week == weeks)[1];
+  my.day = log.df$day.week[i];
+    idx.day = which(my.day == days)[1];
+  
+  n.file = log.df$file[i];
+  n.insert = log.df$insert[i];
+  n.delete = log.df$delete[i];
+  
+  hours.file[idx.hour]   = hours.file[idx.hour]   + n.file;
+  hours.insert[idx.hour] = hours.insert[idx.hour] + n.insert;
+  hours.delete[idx.hour] = hours.delete[idx.hour] + n.delete;
+  
+  days.file[idx.day]   = days.file[idx.day]   + n.file;
+  days.insert[idx.day] = days.insert[idx.day] + n.insert;
+  days.delete[idx.day] = days.delete[idx.day] + n.delete;
+  
+  weeks.file[idx.week]   = weeks.file[idx.week]   + n.file;
+  weeks.insert[idx.week] = weeks.insert[idx.week] + n.insert;
+  weeks.delete[idx.week] = weeks.delete[idx.week] + n.delete;
+  }
+
+
+my.git$groups = list();
+my.git$groups$hours = list("hours" = hours, "file" = hours.file, "insert" = hours.insert, "delete" = hours.delete);
+my.git$groups$days = list("days" = days, "file" = days.file, "insert" = days.insert, "delete" = days.delete);
+my.git$groups$weeks = list("weeks" = weeks, "file" = weeks.file, "insert" = weeks.insert, "delete" = weeks.delete);
+my.object$git = my.git;
+
+plot(hours, hours.file,   bty="n", type="l");  # 0 is midnight
+plot(hours, hours.insert, bty="n", type="l");
+plot(hours, hours.delete, bty="n", type="l");
+
+
+plot(days, days.file,   bty="n", type="l");    # 1 is Monday
+plot(days, days.insert, bty="n", type="l");
+plot(days, days.delete, bty="n", type="l");
+
+plot(weeks, weeks.file,   bty="n", type="l");  # 36 is August 30, 2020
+plot(weeks, weeks.insert, bty="n", type="l");  # https://savvytime.com/week-number
+plot(weeks, weeks.delete, bty="n", type="l");
+
+###############################################
+### Feel free to improve on the graphics, if you desire, totally optional ...
+
+```
+
+## Conclusive Summary
+
+```{r}
+# you need to upload the .rds and .html file after you KNIT ...
+saveRDS(my.object, paste0(path.to.git.final,"workspaceAudit.rds") );
+```
+
+This audit is worth 50 points.  Based on your activity in the workspace, self-assess how many points you merit.  Mastery is perfection at 50 points; Developing is about 40 points; Nascent is about 30 points.  Justify your decision based on the consistency of your use of the tools and workspace throughout the semester.
+
+Be certain to review the graphs and include self-reflective commentary on your work habits: day of week, hour of day, and so on.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+-- WRITE SOMETHING HERE --
+
+I deserve 45/50 points because I managed to commit my repository multiple times. Of course I could have commited more frequently but I didn't see the point because I didn't have many new files being updated in that folder and I decided that I would simply commit the files when necessary. I was using git bash for another self project I had (creating github portfolio) so I dont think the issue if any is effort or use of git bash. As far as consistency, I used it when I deemed necessary which is why there are about 3 dates I committed to my WSU repository.
+
+My work hours are not consistent but to me that is expected as I dont have a "time" schedule for when to work on certain things. I have a weekly schedule of all assignments I need to submit that week.
+
+During the semester I had a couple of issues with R which lead me to update all my packages more than once. I also had to re-install R and update MikTex to get the Latex working.
+
+When it comes to dropbox, I did not have it downloaded all semester. I recently just downloaded it to complete this workspace Audit. I honestly didn't know it was a requirement or that we would be graded on our use of it. When I heard dropbox was an option, I decided not to use it and to simply check manually for updates. I don't think my lack of consistency and use of certain workspace tools such as dropbox will be too detrimental, which is why I chose to mark down 5 total points. Furthermore, I do believe I have a good understanding of these tools and why theyre important, especially github/version control. Ultimately, I would label myself as approaching Mastery and give myself a 45/50. Thank you.
+</pre>

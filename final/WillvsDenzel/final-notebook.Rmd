@@ -1,0 +1,268 @@
+---
+title: Will vs Denzel.
+author:
+- name: Nahom Debela
+  affiliation: Washington State University
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    keep_tex: yes
+    fig_caption: yes
+    toc: no
+    toc_depth: 0
+    number_sections: yes
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ../../latex-templates/report.tex
+  html_document:
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: '3'
+abstract: |
+  \noindent In this report ... \vspace{0.12in}
+  
+sectionnumberdepth: 3
+#titleEndnotes: ENDNOTES
+---
+title: Will vs Denzel.
+author:
+- name: Nahom Debela
+  affiliation: Washington State University
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    keep_tex: yes
+    fig_caption: yes
+    toc: no
+    toc_depth: 0
+    number_sections: yes
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ../../latex-templates/report.tex
+  html_document:
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: '3'
+abstract: |
+  \noindent In this report ... \vspace{0.12in}
+  
+sectionnumberdepth: 3
+titleEndnotes: ENDNOTES
+titleReferences: REFERENCES
+columnsReferences: 2
+titleTOC: TABLE OF CONTENTS
+bibliography: ./../biblio/master.bib
+bibliostyle: ./../biblio/ormsv080.bst
+subtitle: Who is a better actor?
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Your formal writeup of Will vs Denzel (worth 100 points).  You will submit a raw notebook of your analysis "will-v-denzel.Rmd" and a final-report using a formal writeup "will-v-denzel.pdf"... The final report can utilize the same "report" template as we used for "project-measure" ... you will have to setup that correctly in your final folder.  I am giving you an open ended question, and you will build your notebook and report from scratch.  You have plenty of other notebooks and report ideas to utilize in your efforts.  The PDF report will not have "any code" anywhere, I don't need an appendix.  Your audience is your instructor, a data analyst like you.  He has asked you a question and wants your opinion.  An answer of "they are about the same" or "I can't decide" is likely a "novice" answer.  I could see a stellar "mastery" response like that but that would also have to be impressive/stellar analysis.  A "novice" answer is about a C, a "mastery" answer is about an A for those of you that are concerned about grades.  I would strongly recommend that you provide an overview of the two actors, one strong summary table, and one graphic that aligns with your final answer.  The writeup main body should be about 5 pages, 3 is too little and 10 is too much.  You can have ENDNOTES, REFERENCES, and TOC that I would not count toward that end.  If you have a really important second/third graphic, you could include those in the APPENDIX.  I do not want any code in this formal writeup.  A good response shows both sides, and does not cherry-pick data on one side to fit a narrative.  "Even though X performs better than Y on these factors, I chose Y because ..."
+
+
+library(devtools);
+# install_github("MonteShaffer/imdb/imdb");
+library(imdb)
+library(ggplot2)
+local.path = "C:/Users/nahom/_git_/WSU_STATS419_FALL2020/";
+source( paste0(local.path, "functions/willVdenzel Functions.R"), local = T);
+source( paste0(local.path, "functions/functions-dataframe.R"), local = T);
+
+```
+
+# Input Data
+```{r,code,message=FALSE, echo=FALSE}
+packageVersion("imdb") #0.1.1
+imdb::loadDataIMDB();
+```
+
+# EDA
+```{r,codeId,message=FALSE}
+
+willID = getActorId("Will Smith")
+denzelID = getActorId("Denzel Washington")
+
+willInfoDf = getActorInfo('Will Smith')
+denzelInfoDf = getActorInfo('Denzel Washington')
+```
+
+```{r,codeCoStars,message=FALSE}
+row = imdb.data$all.movies.creatives[imdb.data$all.movies.creatives$role == "director",] 
+colnames(row)[3] <- "Directornmid"
+
+colnames(willInfoDf)[1] <- "ttid"
+colnames(denzelInfoDf)[1] <- "ttid"
+
+willInfoDf.updated <- merge(row, willInfoDf, by = c("ttid"))
+denzelInfoDf.updated <- merge(row, denzelInfoDf, by = c("ttid"))
+
+row4 = imdb.data$all.movies.creatives[imdb.data$all.movies.creatives$role == "star" & imdb.data$all.movies.creatives$role != willID ,]
+
+row5 = imdb.data$all.movies.creatives[imdb.data$all.movies.creatives$role == "star" & imdb.data$all.movies.creatives$role != denzelID ,]
+
+willInfoDf.coStars = merge(row4, willInfoDf, by=c("ttid"))
+denzelInfoDf.coStars = merge(row5, denzelInfoDf, by=c("ttid"))
+
+cat("Will Smith has worked alongside:", length(willInfoDf.coStars$nmid), "Co Stars", "\n")
+cat("Denzel Washington has worked alongside:", length(denzelInfoDf.coStars$nmid), "Co Stars", "\n")
+
+# Headlining
+coStarsWill.headlining = intersect(willInfoDf.coStars$nmid, imdb.data$headliners$actors)
+cat("Number of Headlining CoStars for Will: ", length(coStarsWill.headlining), "\n")
+coStarsDenzel.headlining = intersect(denzelInfoDf.coStars$nmid, imdb.data$headliners$actors)
+cat("Number of Headlining CoStars for Denzel: ", length(coStarsDenzel.headlining), "\n")
+
+# Popular 50
+coStarsWill.pop50 = intersect(imdb.data$actors$popular50, willInfoDf.coStars$nmid)
+coStarsDenzel.pop50 = intersect(imdb.data$actors$popular50, denzelInfoDf.coStars$nmid)
+cat("Number of Popular 50 co Stars for Will: ", length(coStarsWill.pop50), "\n")
+cat("Number of Popular 50 co Stars for Denzel: ", length(coStarsDenzel.pop50), "\n")
+
+# Top 250
+coStarsWill.top250 =intersect(imdb.data$actors$top250, willInfoDf.coStars$nmid)
+coStarsDenzel.top250 = intersect(imdb.data$actors$top250, denzelInfoDf.coStars$nmid)
+cat("Number of top 250 coStars for Will: ", length(coStarsWill.top250), "\n")
+cat("Number of top 250 coStars for Denzel: ", length(coStarsDenzel.top250), "\n")
+
+# Gem 50
+coStarsWill.gem50 = intersect(imdb.data$actors$gem50, willInfoDf.coStars$nmid)
+coStarsDenzel.gem50 = intersect(imdb.data$actors$gem50, denzelInfoDf.coStars$nmid)
+cat("Number of gem 50 co Stars for Will: ", length(coStarsWill.gem50), "\n")
+cat("Number of gem 50 co Stars for Denzel: ", length(coStarsDenzel.gem50), "\n")
+
+will.updated.starRank = imdb.data$all.actors.info[,c("nmid","starmeter.rank")]
+# Get only rows with star rank
+will.updated.starRank = will.updated.starRank[!(is.na(will.updated.starRank$starmeter.rank)),]
+
+coStarsWill.starRank = intersect(will.updated.starRank$nmid, willInfoDf.coStars$nmid)
+
+denzel.updated.starRank = imdb.data$all.actors.info[,c("nmid","starmeter.rank")]
+# Get only rows with star rank
+denzel.updated.starRank = denzel.updated.starRank[!(is.na(denzel.updated.starRank$starmeter.rank)),]
+
+coStarsDenzel.starRank = intersect(denzel.updated.starRank$nmid, denzelInfoDf.coStars$nmid)
+
+cat("Number of star ranked co Stars for Will: ", length(coStarsWill.starRank), "\n")
+cat("Number of star ranked co Stars for Denzel: ", length(coStarsDenzel.starRank), "\n")
+```
+
+# Plot Actors co-cast rankings
+```{r,code,message=FALSE}
+mydata <- data.frame(Pop50=c(length(coStarsWill.pop50),length(coStarsDenzel.pop50)), Headliners=c(length(coStarsWill.headlining)
+,length(coStarsDenzel.headlining)
+),Top250=c(length(coStarsWill.top250)
+,length(coStarsDenzel.top250)), Gem250=c(length(coStarsWill.gem50),length(coStarsDenzel.gem50)), StarRankings = c(length(coStarsWill.starRank), length(coStarsDenzel.starRank)))
+barplot(as.matrix(mydata), main="Each Actors Co Stars Rankings", ylab="Number of Co Stars",xlab = "Rankings", beside=TRUE, col=terrain.colors(2))
+legend("top", c("Will Smith", "Denzel"), cex=1, 
+       fill=terrain.colors(2))
+```
+
+
+# Actors Director rankings
+```{r,code2,message=FALSE}
+a = intersect(willInfoDf.updated$Directornmid, imdb.data$headliners$directors)
+cat("Number of Top Directors for Will: ", length(a), "\n")
+
+b = intersect(denzelInfoDf.updated$Directornmid, imdb.data$headliners$directors)
+cat("Number of Top Directors for Denzel: ", length(b), "\n")
+
+cat("Denzel has had significantly more prominent directors than Will. Denzel has had 9 directors who have headlined at least 15 times as a director, compared to Smith's 2.")
+
+```
+
+# Actors Writers rankings
+```{r,codeWriters,message=FALSE}
+
+row2 = imdb.data$all.movies.creatives[imdb.data$all.movies.creatives$role == "writer",] 
+colnames(row2)[3] <- "Writer_nmid"
+
+willInfoDf.updated2 <- merge(row2, willInfoDf, by = c("ttid"))
+denzelInfoDf.updated2 <- merge(row2, denzelInfoDf, by = c("ttid"))
+
+a = intersect(willInfoDf.updated2$Writer_nmid, imdb.data$headliners$writers)
+cat("Number of Top Writers for Will: ", length(a), "\n")
+
+b = intersect(denzelInfoDf.updated2$Writer_nmid, imdb.data$headliners$writers)
+cat("Number of Top Writers for Denzel: ", length(b), "\n")
+
+cat("Denzel has had significantly more prominent writers than Will. Denzel has had 5 writers who have headlined at least 15 times as a writer, compared to smiths 2.")
+
+```
+
+# Actors Rank
+```{r,code4,message=FALSE}
+
+# Merging dataframes to get more information for Will and Denzel
+info = imdb.data$all.movies.actors.characters[imdb.data$all.movies.actors.characters$nmid == willID,] 
+
+willInfoDf = merge(info,willInfoDf, by = c("ttid"))
+
+info = imdb.data$all.movies.actors.characters[imdb.data$all.movies.actors.characters$nmid == denzelID,] 
+
+denzelInfoDf = merge(info,denzelInfoDf, by = c("ttid"))
+
+willInfoDf = merge(imdb.data$all.actors.movies,willInfoDf, by = c("ttid"))
+denzelInfoDf = merge(imdb.data$all.actors.movies,denzelInfoDf, by = c("ttid"))
+
+# Removed movie: to many NA's, didn't think movie was worth keeping
+willInfoDf <- willInfoDf[!(willInfoDf$title=="The 100 Best Black Movies (Ever)"),]
+denzelInfoDf <- denzelInfoDf[!(denzelInfoDf$title=="The 100 Best Black Movies (Ever)"),]
+
+id.col = c(rep(willID,34))
+willInfoDf["nmid"] = id.col
+willInfoDf = merge(imdb.data$all.actors.rank, willInfoDf, by = c("ttid", "nmid"))
+
+id.col2 = c(rep(denzelID,45))
+denzelInfoDf["nmid"] = id.col2
+denzelInfoDf = merge(imdb.data$all.actors.rank, denzelInfoDf, by = c("ttid", "nmid"))
+
+mean.ratings.will = mean(willInfoDf[,9], na.rm=TRUE)
+cat("The average rating of movies that have aired featuring Will Smith is:", mean.ratings.will) 
+
+mean.ratings.denzel = mean(denzelInfoDf[,9], na.rm=TRUE)
+cat("The average rating of movies that have aired featuring Denzel Washington is:", mean.ratings.denzel, "\n") 
+
+```
+
+# Movie Budgets
+```{r,code5,message=FALSE}
+
+# Will
+willInfoDf.updated.budgets <- merge(willInfoDf, imdb.data$movies.df$info, by = c("ttid"))
+willInfoDf.updated.budgets$budget <- as.numeric(as.character(willInfoDf.updated.budgets$budget))
+
+num.na = sum(is.na(willInfoDf.updated.budgets$budget) == TRUE)
+will.average.budget = sum(willInfoDf.updated.budgets$budget, na.rm = TRUE) / (length(willInfoDf.updated.budgets$budget)-num.na)
+
+# Denzel
+denzelInfoDf.updated.budgets <- merge(denzelInfoDf, imdb.data$movies.df$info, by = c("ttid"))
+denzelInfoDf.updated.budgets$budget <- as.numeric(as.character(denzelInfoDf.updated.budgets$budget))
+
+num.na2 = sum(is.na(denzelInfoDf.updated.budgets$budget) == TRUE)
+denzel.average.budget = sum(denzelInfoDf.updated.budgets$budget, na.rm = TRUE) / (length(denzelInfoDf.updated.budgets$budget)-num.na2)
+
+cat("The average budget for movies featuring Denzel Washington: $", will.average.budget, "\n") 
+
+cat("The average budget for movies featuring Will Smith: $", denzel.average.budget, "\n") 
+```
+
+# Rating Vs Budget
+```{r,code6,message=FALSE}
+new.df = data.frame(Ratings = , Budget = )
+
+movies = as.data.frame(imdb.data$movies$all)
+colnames(movies)[1] = "ttid"
+new.df = merge(movies, imdb.data$movies.df$info,  by = c("ttid"))
+new.df = merge(new.df, imdb.data$all.actors.movies,  by = c("ttid"))
+imdb.data$movies.df$info
+new.df = new.df[,c("ttid","release.date", "ratings", "budget")]
+
+new.df$budget <- as.numeric(as.character(new.df$budget))
+new.df = na.omit(new.df)
+yz$b <- as.numeric(as.character(yyz$b))
+
+```

@@ -1,0 +1,18 @@
+---
+title: "final"
+author: "Nahom Debela"
+date: "12/12/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+

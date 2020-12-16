@@ -1,0 +1,42 @@
+[33mcommit 5f1d83a36a6a29e4c5a5d96f0245175bbb813648[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Nahom Debela <nahom.debela@wsu.edu>
+Date:   Fri Nov 13 17:49:56 2020 -0800
+
+    measure project
+
+[33mcommit ce2501ce7b8f78ea6804b73b0ac79fb6ac75376b[m
+Merge: 94d43e4 dc71c4e
+Author: Nahom Debela <nahom.debela@wsu.edu>
+Date:   Sun Sep 20 22:14:08 2020 -0700
+
+    common functions
+
+[33mcommit 94d43e4c761fc40a780ad91d81c467ff4efe7354[m
+Author: Nahom Debela <nahom.debela@wsu.edu>
+Date:   Sun Sep 20 22:07:04 2020 -0700
+
+    common functions
+
+[33mcommit 17b03f2c151550903a500c34169186f964340a76[m
+Author: Nahom Debela <nahom.debela@wsu.edu>
+Date:   Sun Sep 20 21:55:09 2020 -0700
+
+    basic common functions
+
+[33mcommit dc71c4e584c21ef41d194f64d8146ac0fc310010[m
+Author: NahomDebela <71052382+NahomDebela@users.noreply.github.com>
+Date:   Sun Sep 20 21:08:52 2020 -0700
+
+    Create functions
+
+[33mcommit e28d10652dcd3b54d8497f228f98fbe6fbc18648[m
+Author: Nahom Debela <nahom.debela@wsu.edu>
+Date:   Thu Sep 10 23:55:50 2020 -0700
+
+    personality dataset
+
+[33mcommit bc384c9c5442d63701f0eae487817ac2aedd84c9[m
+Author: NahomDebela <71052382+NahomDebela@users.noreply.github.com>
+Date:   Thu Sep 10 15:59:16 2020 -0700
+
+    Initial commit
